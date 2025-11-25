@@ -13,17 +13,39 @@ class NIHProcessor:
         ]
     
     def preprocess_image(self, image_file):
-        """Preprocess uploaded image for NIH-trained model"""
+        """Preprocess uploaded image for medical model - FIXED VERSION"""
         try:
-            img = Image.open(image_file).convert('L')  
+            img = Image.open(image_file).convert('L')  # Convert to grayscale
             img = img.resize((224, 224))
             
-            img_array = np.array(img) / 255.0
-            img_array = img_array[None, None, ...]  
+            # Convert to numpy array
+            img_array = np.array(img, dtype=np.float32)
             
+            print(f"🔍 Original image - Range: {img_array.min()} to {img_array.max()}")
+            
+            # MEDICAL IMAGE NORMALIZATION FIX:
+            # Medical models expect images in Hounsfield units [-1024, 1024]
+            # Scale to [0, 1] then map to medical range
+            
+            # 1. Normalize to [0, 1]
+            img_array = img_array / 255.0
+            
+            # 2. Map to medical image range [-1024, 1024]
+            # Typical medical images: air = -1000, water = 0, bone = +1000
+            img_array = img_array * 2048 - 1024  # [0,1] -> [-1024, 1024]
+            
+            print(f"🔍 Medical normalized - Range: {img_array.min():.1f} to {img_array.max():.1f}")
+            
+            # Add batch and channel dimensions: [1, 1, 224, 224]
+            img_array = img_array[None, None, ...]
+            
+            # Convert to tensor
             img_tensor = torch.from_numpy(img_array).float()
+            
             return img_tensor
+            
         except Exception as e:
+            print(f"❌ Medical preprocessing failed: {e}")
             raise Exception(f"Image processing failed: {e}")
     
     def interpret_nih_results(self, outputs, pathologies, confidence_threshold=0.1):

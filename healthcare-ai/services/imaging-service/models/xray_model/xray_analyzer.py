@@ -20,10 +20,14 @@ class XRayAnalyzer:
         try:
             # Preprocess image
             image_tensor = self.processor.preprocess_image(image_file)
-            
+            print(f"🔍 Input tensor stats - Mean: {image_tensor.mean():.3f}, Std: {image_tensor.std():.3f}")
+
             # Run model prediction
             with torch.no_grad():
                 outputs = self.model_loader.model(image_tensor)
+                
+            print(f"🔍 Model outputs - Shape: {outputs.shape}")
+            print(f"🔍 Output range: {outputs.min():.3f} to {outputs.max():.3f}")
             
             # Interpret results
             findings = self.processor.interpret_nih_results(

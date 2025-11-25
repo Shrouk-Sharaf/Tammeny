@@ -11,7 +11,9 @@ def test_with_uploaded_images():
     test_images = [
         r"D:\SIC-GraduationProject\IM-0001-0001.jpeg", 
         r"D:\SIC-GraduationProject\IM-0119-0001.jpeg", 
-        r"D:\SIC-GraduationProject\person1000_bacteria_2931.jpeg"
+        r"D:\SIC-GraduationProject\person1000_bacteria_2931.jpeg",
+        r"D:\SIC-GraduationProject\00006585_008.png",
+        r"D:\SIC-GraduationProject\IM-0115-0001.jpeg"
     ]
     
     # Filter to only existing images
@@ -44,7 +46,7 @@ def analyze_single_image(image_path):
             response = requests.post(
                 'http://localhost:8002/analyze/xray', 
                 files=files,
-                data={'confidence_threshold': 0.1}
+                data={'confidence_threshold': 0.3}
             )
         
         if response.status_code == 200:
