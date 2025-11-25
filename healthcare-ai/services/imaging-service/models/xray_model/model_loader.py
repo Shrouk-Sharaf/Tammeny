@@ -9,13 +9,13 @@ class XRayModelLoader:
     
     def load_nih_model(self):
         try:
-            print("🔄 Loading NIH-trained medical AI model...")
+            print("Loading NIH-trained medical AI model...")
             self.model = xrv.models.DenseNet(weights="densenet121-res224-nih")
             self.model.eval()
             self.pathologies = self.model.pathologies
             return True
         except Exception as e:
-            print(f"❌ Model loading failed: {e}")
+            print(f"Model loading failed: {e}")
             return False
     
     def get_model_info(self):

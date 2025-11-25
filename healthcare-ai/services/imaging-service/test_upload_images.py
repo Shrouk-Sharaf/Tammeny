@@ -5,8 +5,7 @@ from PIL import Image
 import io
 
 def test_with_uploaded_images():
-    """Test X-Ray model by uploading images from any location"""
-    print("🩻 X-Ray Model - Image Upload Test")
+    print("X-Ray Model - Image Upload Test")
     print("=" * 50)
     
     test_images = [
@@ -19,23 +18,23 @@ def test_with_uploaded_images():
     existing_images = [img for img in test_images if os.path.exists(img)]
     
     if not existing_images:
-        print("❌ No test images found at the specified paths!")
-        print("\n💡 Please modify the 'test_images' list in the script to point to your actual image files")
-        print("💡 Or let me create some test images for you...")
+        print("No test images found at the specified paths!")
+        print("\nPlease modify the 'test_images' list in the script to point to your actual image files")
+        print("Or let me create some test images for you...")
         create_test_images()
         return
     
-    print(f"🎯 Found {len(existing_images)} images to analyze")
+    print(f"Found {len(existing_images)} images to analyze")
     
     # Analyze each image
     for i, image_path in enumerate(existing_images, 1):
         print(f"\n{'='*50}")
-        print(f"📊 Image {i}/{len(existing_images)}: {os.path.basename(image_path)}")
+        print(f"Image {i}/{len(existing_images)}: {os.path.basename(image_path)}")
         analyze_single_image(image_path)
     
     print(f"\n{'='*50}")
-    print("🎉 Image Upload Test Complete!")
-    print("💡 Your X-Ray model is ready to analyze uploaded images!")
+    print("Image Upload Test Complete!")
+    print("Your X-Ray model is ready to analyze uploaded images!")
 
 def analyze_single_image(image_path):
     """Analyze a single uploaded image"""
@@ -52,18 +51,18 @@ def analyze_single_image(image_path):
             results = response.json()
             
             print(f"✅ ANALYSIS SUCCESSFUL!")
-            print(f"📋 Analysis ID: {results['analysis_id']}")
-            print(f"🎯 Overall Risk: {results['overall_risk_level'].upper()}")
+            print(f"Analysis ID: {results['analysis_id']}")
+            print(f"Overall Risk: {results['overall_risk_level'].upper()}")
             
             summary = results['findings_summary']
-            print(f"📊 Findings Summary:")
+            print(f"Findings Summary:")
             print(f"   Total: {summary['total_findings']}")
-            print(f"   🚨 High Severity: {summary['high_severity']}")
-            print(f"   ⚠️  Medium Severity: {summary['medium_severity']}")
-            print(f"   ℹ️  Low Severity: {summary['low_severity']}")
+            print(f"   High Severity: {summary['high_severity']}")
+            print(f"   Medium Severity: {summary['medium_severity']}")
+            print(f"   Low Severity: {summary['low_severity']}")
             
             # Show detailed findings
-            print(f"\n🔍 Detailed Findings:")
+            print(f"\nDetailed Findings:")
             for severity in ['high_severity', 'medium_severity', 'low_severity']:
                 findings = results['detailed_findings'][severity]
                 if findings:
@@ -73,23 +72,23 @@ def analyze_single_image(image_path):
                     for finding in findings[:3]:  # Show top 3 per category
                         print(f"      - {finding['condition']}: {finding['confidence_percent']}")
                         if 'medical_advice' in finding and severity != 'low_severity':
-                            print(f"        💡 {finding['medical_advice']}")
+                            print(f"        {finding['medical_advice']}")
             
             # Recommendations
-            print(f"\n💡 Clinical Recommendations:")
+            print(f"\nClinical Recommendations:")
             for j, rec in enumerate(results['clinical_recommendations'], 1):
                 print(f"   {j}. {rec}")
                 
         else:
-            print(f"❌ Analysis failed: {response.status_code}")
+            print(f"Analysis failed: {response.status_code}")
             print(f"   Error: {response.text}")
             
     except Exception as e:
-        print(f"❌ Error analyzing image: {e}")
+        print(f"Error analyzing image: {e}")
 
 def create_test_images():
     """Create some test X-ray images if no real images are available"""
-    print("\n🖼️ Creating test X-ray images...")
+    print("\nCreating test X-ray images...")
     
     test_images_created = []
     
@@ -116,29 +115,29 @@ def create_test_images():
         save_path = os.path.join(os.getcwd(), filename)
         img.save(save_path)
         test_images_created.append(save_path)
-        print(f"✅ Created: {filename} - {description}")
+        print(f"Created: {filename} - {description}")
     
-    print(f"\n🎯 Created {len(test_images_created)} test images in current directory")
-    print("🔍 Now analyzing the created test images...")
+    print(f"\nCreated {len(test_images_created)} test images in current directory")
+    print("Now analyzing the created test images...")
     
     # Analyze the created images
     for image_path in test_images_created:
         print(f"\n{'='*50}")
-        print(f"📊 Analyzing: {os.path.basename(image_path)}")
+        print(f"Analyzing: {os.path.basename(image_path)}")
         analyze_single_image(image_path)
     
     # Cleanup option
     print(f"\n{'='*50}")
-    cleanup = input("🧹 Delete test images? (y/n): ").lower().strip()
+    cleanup = input("Delete test images? (y/n): ").lower().strip()
     if cleanup == 'y':
         for image_path in test_images_created:
             if os.path.exists(image_path):
                 os.remove(image_path)
-                print(f"🗑️ Deleted: {os.path.basename(image_path)}")
+                print(f"Deleted: {os.path.basename(image_path)}")
 
 def upload_single_image():
     """Upload and analyze a single specific image"""
-    print("\n📤 Single Image Upload")
+    print("\nSingle Image Upload")
     print("=" * 30)
     
     # Get image path from user
@@ -148,10 +147,10 @@ def upload_single_image():
     image_path = image_path.strip('"\'')
     
     if not os.path.exists(image_path):
-        print(f"❌ Image not found: {image_path}")
+        print(f"Image not found: {image_path}")
         return
     
-    print(f"🎯 Analyzing: {os.path.basename(image_path)}")
+    print(f"Analyzing: {os.path.basename(image_path)}")
     analyze_single_image(image_path)
 
 if __name__ == "__main__":
@@ -169,5 +168,5 @@ if __name__ == "__main__":
     elif choice == "3":
         create_test_images()
     else:
-        print("❌ Invalid choice. Running default test...")
+        print("Invalid choice. Running default test...")
         test_with_uploaded_images()
