@@ -1,4 +1,3 @@
-# nih_processor.py - UPDATED
 import torch
 from PIL import Image
 import numpy as np
@@ -13,42 +12,35 @@ class NIHProcessor:
         ]
     
     def preprocess_image(self, image_file):
-        """Preprocess uploaded image for medical model - FIXED VERSION"""
         try:
-            img = Image.open(image_file).convert('L')  # Convert to grayscale
+            if hasattr(image_file, 'seek'):
+                image_file.seek(0)
+                
+            img = Image.open(image_file).convert('L')
             img = img.resize((224, 224))
             
-            # Convert to numpy array
             img_array = np.array(img, dtype=np.float32)
             
-            print(f"🔍 Original image - Range: {img_array.min()} to {img_array.max()}")
-            
-            # MEDICAL IMAGE NORMALIZATION FIX:
-            # Medical models expect images in Hounsfield units [-1024, 1024]
-            # Scale to [0, 1] then map to medical range
-            
-            # 1. Normalize to [0, 1]
+            print(f"🔍 ORIGINAL - Range: {img_array.min()} to {img_array.max()}")
+                            
             img_array = img_array / 255.0
+            img_array = img_array * 2048 - 1024  
             
-            # 2. Map to medical image range [-1024, 1024]
-            # Typical medical images: air = -1000, water = 0, bone = +1000
-            img_array = img_array * 2048 - 1024  # [0,1] -> [-1024, 1024]
+            print(f"🔍 MEDICAL NORMALIZED - Range: {img_array.min():.1f} to {img_array.max():.1f}")
             
-            print(f"🔍 Medical normalized - Range: {img_array.min():.1f} to {img_array.max():.1f}")
-            
-            # Add batch and channel dimensions: [1, 1, 224, 224]
             img_array = img_array[None, None, ...]
             
-            # Convert to tensor
             img_tensor = torch.from_numpy(img_array).float()
             
-            return img_tensor
+            print(f"🔍 FINAL TENSOR - Range: {img_tensor.min():.1f} to {img_tensor.max():.1f}")
             
+            return img_tensor
+                
         except Exception as e:
-            print(f"❌ Medical preprocessing failed: {e}")
+            print(f"Medical preprocessing failed: {e}")
             raise Exception(f"Image processing failed: {e}")
-    
-    def interpret_nih_results(self, outputs, pathologies, confidence_threshold=0.1):
+
+    def interpret_nih_results(self, outputs, pathologies, confidence_threshold=0.5):
         significant_findings = []
         
         for i, pathology in enumerate(pathologies):
@@ -70,7 +62,6 @@ class NIHProcessor:
         return significant_findings
     
     def map_to_nih_disease(self, pathology):
-        """Map model pathology names to NIH disease names"""
         mapping = {
             'Atelectasis': 'Atelectasis',
             'Cardiomegaly': 'Cardiomegaly', 
@@ -90,7 +81,6 @@ class NIHProcessor:
         return mapping.get(pathology, pathology)
     
     def assess_severity(self, pathology, confidence):
-        """Assess clinical severity of finding"""
         high_severity = ['Pneumothorax', 'Edema', 'Consolidation', 'Pneumonia']
         medium_severity = ['Effusion', 'Mass', 'Cardiomegaly']
         
@@ -102,7 +92,6 @@ class NIHProcessor:
             return 'low'
     
     def generate_recommendations(self, findings):
-        """Generate clinical recommendations based on findings"""
         high_severity_findings = [f for f in findings if f['severity'] == 'high']
         medium_severity_findings = [f for f in findings if f['severity'] == 'medium']
         
@@ -110,7 +99,7 @@ class NIHProcessor:
         
         if high_severity_findings:
             recommendations.extend([
-                "🚨 **Urgent consultation recommended** - seek medical attention promptly",
+                "**Urgent consultation recommended** - seek medical attention promptly",
                 "Consider visiting emergency care if experiencing breathing difficulties",
                 "Share these results with a healthcare provider immediately"
             ])
@@ -128,3 +117,30 @@ class NIHProcessor:
             ])
         
         return recommendations
+
+    def debug_preprocessing(self, image_file):
+        """Debug method to see what's happening in preprocessing"""
+        try:
+            # Reset file position
+            if hasattr(image_file, 'seek'):
+                image_file.seek(0)
+                
+            img = Image.open(image_file).convert('L')
+            original_img = img.copy()
+            img = img.resize((224, 224))
+            
+            img_array = np.array(img, dtype=np.float32)
+            print(f"🚨 DEBUG - ORIGINAL: Range {img_array.min():.1f} to {img_array.max():.1f}")
+            
+            # Your current preprocessing
+            img_array = img_array / 255.0
+            print(f"🚨 DEBUG - AFTER /255: Range {img_array.min():.3f} to {img_array.max():.3f}")
+            
+            img_array = img_array * 2048 - 1024  # This might be the problem!
+            print(f"🚨 DEBUG - AFTER MEDICAL: Range {img_array.min():.1f} to {img_array.max():.1f}")
+            
+            return img_array[None, None, ...]
+            
+        except Exception as e:
+            print(f"Debug preprocessing failed: {e}")
+            return None

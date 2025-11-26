@@ -1,0 +1,65 @@
+/* Custom styles for HealthAI Portal */
+
+/* Main background */
+.main {
+    background-color: #f8f9fa;
+}
+
+/* Headers */
+h1, h2, h3 {
+    color: #2c3e50;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Sidebar styling */
+.css-1d391kg {
+    background-color: #2c3e50;
+}
+
+/* Metric cards */
+[data-testid="metric-container"] {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Buttons */
+.stButton>button {
+    border-radius: 8px;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    font-weight: 500;
+}
+
+.stButton>button:hover {
+    background-color: #2980b9;
+}
+
+/* Emergency button special styling */
+.stButton>button:contains("Emergency") {
+    background-color: #e74c3c;
+}
+
+/* Chat message styling */
+.stChatMessage {
+    padding: 10px;
+    border-radius: 10px;
+    margin: 5px 0;
+}
+
+/* Custom tabs styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 2px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 50px;
+    white-space: pre-wrap;
+    background-color: #f8f9fa;
+    border-radius: 4px 4px 0px 0px;
+    gap: 1px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}

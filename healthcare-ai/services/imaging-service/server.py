@@ -8,6 +8,7 @@ from inference import analyze_xray_image
 from postproc import format_imaging_results
 import uuid
 from datetime import datetime
+from io import BytesIO
 
 app = FastAPI(
     title="Medical Imaging Service",
@@ -51,7 +52,7 @@ async def get_available_models():
 @app.post("/analyze/xray")
 async def analyze_xray(
     file: UploadFile = File(...),
-    confidence_threshold: float = 0.1,
+    confidence_threshold: float = 0.5,  # ✅ Make sure this is 0.5, not 0.1
     include_visualization: bool = False
 ):
     """Analyze chest X-ray image for thoracic conditions"""
@@ -64,22 +65,27 @@ async def analyze_xray(
                 f"Unsupported file type. Allowed: {', '.join(allowed_types)}"
             )
         
+        # ✅ FIX: Read the file content properly for Streamlit uploads
+        file_content = await file.read()
+        
+        # Create a file-like object from the content
+        image_file = BytesIO(file_content)
+        
         # Validate file size (10MB max)
-        file.file.seek(0, 2)
-        file_size = file.file.tell()
-        file.file.seek(0)
-        if file_size > 10 * 1024 * 1024:
+        if len(file_content) > 10 * 1024 * 1024:
             raise HTTPException(400, "File too large. Maximum size is 10MB")
         
         # Generate analysis ID
         analysis_id = str(uuid.uuid4())[:8]
         
         print(f"🔍 Analyzing X-Ray {analysis_id}...")
+        print(f"📁 File info: {file.filename}, Size: {len(file_content)} bytes")
+        print(f"🎯 Confidence threshold: {confidence_threshold}")  # ✅ Debug print
         
-        # Perform analysis
+        # Perform analysis - pass the BytesIO object AND the confidence threshold
         raw_results = await analyze_xray_image(
-            file, 
-            confidence_threshold=confidence_threshold
+            image_file,  # Now passing BytesIO instead of UploadFile
+            confidence_threshold=confidence_threshold  # ✅ Pass the threshold
         )
         
         # Format results

@@ -1,4 +1,3 @@
-# model_loader.py
 import torch
 import torchxrayvision as xrv
 
