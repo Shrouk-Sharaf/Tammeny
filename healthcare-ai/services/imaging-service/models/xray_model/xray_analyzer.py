@@ -58,10 +58,3 @@ class XRayAnalyzer:
     
     def clear_history(self):
         self.analysis_history = []
-
-def quick_analyze(image_file):
-    analyzer = XRayAnalyzer()
-    if analyzer.initialize_model():
-        return analyzer.analyze_xray(image_file)
-    else:
-        raise Exception("Failed to initialize X-Ray model")
