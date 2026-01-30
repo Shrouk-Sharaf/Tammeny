@@ -182,14 +182,6 @@ curl -X POST "http://localhost:8502/chat" -H "Content-Type: application/json" -d
 4. Push to the branch (`git push origin feature/new-feature`)
 5. Create a Pull Request
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## Disclaimer
 
 This is a demonstration project for educational purposes. It is not intended for clinical use or as a substitute for professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare professionals for medical decisions.
-
-## Contact
-
-For questions or support, please open an issue in the repository.
