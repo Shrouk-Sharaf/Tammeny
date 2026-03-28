@@ -192,7 +192,7 @@ docker run -p 8002:8002 tammeny-imaging
 ## Project Structure
 
 ```
-tammeny/
+healthcare-ai/
 ├── rag_chatbot.py          ← Chatbot API (port 8000)
 ├── Live_MedProc.py         ← Vision AI API (port 8001)
 ├── main.py                 ← Web-search API (port 8003)
