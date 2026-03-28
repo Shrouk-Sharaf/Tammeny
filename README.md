@@ -22,7 +22,7 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 
 ## Screenshots
 
-### 💬 Bilingual Chat
+### Bilingual Chat
 
 > Ask any health question in English or Arabic. Tammeny responds in your language with warm, clear advice — and always reminds you to see a doctor.
 
@@ -30,7 +30,7 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 
 ---
 
-### 🩻 Chest X-Ray Analysis — HIGH Severity
+### Chest X-Ray Analysis — HIGH Severity
 
 > Upload a chest X-ray and get instant AI screening for 14 thoracic conditions. Each finding includes a confidence score and a plain-language explanation of what it means.
 
@@ -38,7 +38,7 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 
 ---
 
-### 🩻 Chest X-Ray Analysis — LOW Severity
+### Chest X-Ray Analysis — LOW Severity
 
 > When findings are minor, Tammeny clearly reassures the patient — no panic, just the right next step.
 
@@ -46,7 +46,7 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 
 ---
 
-## 🎬 Demo Video
+## Demo Video
 
 <video src="https://github.com/user-attachments/assets/df6201e8-c374-453a-805f-5826c8bd3b5c" controls width="100%"></video>
 
