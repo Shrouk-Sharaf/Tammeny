@@ -1,137 +1,166 @@
-# Healthcare AI System
+# 🩺 Tammeny — طمّني
 
-A comprehensive AI-powered healthcare platform providing medical image analysis, intelligent chatbots, OCR processing, and a user-friendly web interface for medical professionals and patients.
+> **AI-Powered Healthcare Communication**  
+
+Tammeny bridges the gap between complex medical AI and real patient understanding — with plain-language explanations, document Q&A, and intelligent health guidance in Arabic and English.
+
+---
 
 ## Features
 
-- **Medical Image Analysis**: AI-powered X-ray analysis using deep learning models
-- **Intelligent Chatbot**: RAG-based conversational AI for medical queries with PDF document support
-- **OCR Service**: Optical character recognition for medical documents
-- **LLM Proxy**: Secure proxy for large language model interactions
-- **Web UI**: Modern Streamlit-based interface for easy access
-- **Microservices Architecture**: Scalable, containerized services
+| Feature | Description |
+|---|---|
+| **X-Ray Analyzer** | DenseNet-121 (NIH ChestX-ray14) — screens for 14 thoracic conditions with plain-language results |
+| **Vision AI** | Upload any medical image, ask a question, get a patient-friendly explanation (Qwen2.5-VL) |
+| **Health Assistant** | RAG chatbot with conversation memory, PDF document Q&A, Arabic & English support |
+| **Bilingual UI** | Full Arabic ↔ English toggle with RTL layout support |
 
-## Architecture
+---
 
-The system consists of the following microservices:
+## Project Structure
 
-- **API Service** (`services/api/`): Main FastAPI backend
-- **Imaging Service** (`services/imaging-service/`): Medical image analysis (port 8002)
-- **LLM Proxy** (`services/llm-proxy/`): Language model proxy service
-- **OCR Service** (`services/ocr-service/`): Document text extraction
-- **Streamlit UI** (`services/streamlit-ui/`): Web interface (port 8501)
-- **Chatbot API** (`rag_chatbot.py`): RAG-based chatbot (port 8502)
+```
+tammeny/
+├── rag_chatbot.py          ← Chatbot API (port 8000)
+├── Live_MedProc.py         ← Vision AI API (port 8001)
+├── chatbot_ui.html         ← Standalone chatbot HTML UI
+├── main.py                 ← Web-search chatbot (optional)
+├── .env.example            ← Environment variable template
+├── requirements.txt
 
-## Prerequisites
-
-- Python 3.8+
-- Docker (optional, for containerized deployment)
-- Git
-
-## Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd healthcare-ai
+│
+├── imaging-service/
+│   ├── server.py           ← Imaging API (port 8002)
+│   ├── inference.py        ← Inference pipeline
+│   ├── postproc.py         ← Result formatter
+│   ├── Dockerfile
+│   └── models/xray_model/
+│       ├── xray_analyzer.py
+│       ├── model_loader.py
+│       └── nih_processor.py
+│
+└── streamlit-ui/
+    ├── app.py              ← Main UI (port 8501)
+    └── Dockerfile
 ```
 
-2. Install dependencies for each service:
+---
 
-### Imaging Service
+## Setup
+
+### 1. Clone & Configure
+
 ```bash
-cd services/imaging-service
+git clone https://github.com/Shrouk-Sharaf/Tammeny
+cd Tammeny
+cp .env.example .env
+# Edit .env and fill in your API keys
+```
+
+### 2. Install Dependencies
+
+```bash
+# Root dependencies (chatbot + vision)
+pip install fastapi uvicorn python-multipart langchain langchain-community \
+    langchain-text-splitters langchain-huggingface langchain-mistralai \
+    faiss-cpu sentence-transformers pypdf python-dotenv requests
+
+# Imaging service
+cd imaging-service
 pip install -r requirements.txt
-```
+cd ..
 
-### Chatbot API
-```bash
-pip install fastapi uvicorn langchain langchain-community langchain-text-splitters langchain-huggingface faiss-cpu sentence-transformers langchain-mistralai pypdf
-```
-
-### Streamlit UI
-```bash
-cd services/streamlit-ui
+# Streamlit UI
+cd streamlit-ui
 pip install -r requirements.txt
+cd ..
 ```
 
-### Live Medical Procedure API
+---
+
+## Running
+
+Open **4 terminals**:
+
 ```bash
-pip install fastapi uvicorn requests python-multipart
-```
-
-## Configuration
-
-⚠️ **Security Note**: The codebase contains hardcoded API keys for demonstration purposes. For production use:
-
-1. Create a `.env` file based on `.env.example`
-2. Replace all hardcoded API keys with environment variables
-3. Use secure key management (e.g., AWS Secrets Manager, Azure Key Vault)
-
-## Running the Application
-
-### Local Development
-
-1. **Start Imaging Service** (Terminal 1):
-```bash
-cd services/imaging-service
-python server.py
-```
-
-2. **Start Chatbot API** (Terminal 2):
-```bash
+# Terminal 1 — Chatbot API
 python rag_chatbot.py
-```
+# → http://127.0.0.1:8000
 
-3. **Start Streamlit UI** (Terminal 3):
-```bash
-cd services/streamlit-ui
-streamlit run app.py
-```
-
-4. **(Optional) Start Live Medical Procedure API** (Terminal 4):
-```bash
+# Terminal 2 — Vision AI
 uvicorn Live_MedProc:app --reload --host 127.0.0.1 --port 8001
+# → http://127.0.0.1:8001
+
+# Terminal 3 — Imaging Service
+cd imaging-service && python server.py
+# → http://0.0.0.0:8002
+
+# Terminal 4 — Streamlit UI
+cd streamlit-ui && streamlit run app.py
+# → http://localhost:8501
 ```
 
-### Docker Deployment
+Then open **http://localhost:8501** in your browser.
 
-Build and run each service individually:
+---
+
+## API Keys Needed
+
+| Key | Where to Get |
+|---|---|
+| `MISTRAL_API_KEY` | https://console.mistral.ai/ — free tier available |
+| `HUGGINGFACEHUB_API_TOKEN` | https://huggingface.co/settings/tokens — free |
+| `HF_ROUTER_TOKEN` | Same HuggingFace token |
+
+---
+
+## Docker (Optional)
 
 ```bash
-# Imaging Service
-cd services/imaging-service
-docker build -t healthcare-imaging .
-docker run -p 8002:8002 healthcare-imaging
+# Imaging service
+cd imaging-service
+docker build -t tammeny-imaging .
+docker run -p 8002:8002 tammeny-imaging
 
-# API Service
-cd services/api
-docker build -t healthcare-api .
-docker run -p 8000:8000 healthcare-api
-
-# And so on for other services...
+# Streamlit UI
+cd streamlit-ui
+docker build -t tammeny-ui .
+docker run -p 8501:8501 tammeny-ui
 ```
 
-## Usage
+---
 
-1. Open your browser and navigate to `http://localhost:8501`
-2. Use the X-ray Analyzer to upload medical images for AI analysis
-3. Interact with the Healthcare Assistant Chatbot for medical queries
-4. Upload PDF documents to enhance chatbot responses with specific medical knowledge
+## API Reference
 
-## API Endpoints
+### Chatbot (`:8000`)
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Serve chatbot HTML UI |
+| POST | `/load_pdf/` | Upload PDF for RAG context |
+| POST | `/chat` | Chat (body: `{prompt, session_id}`) |
 
-### Imaging Service (Port 8002)
-- `GET /`: Service health check
-- `GET /models`: Available imaging models
-- `POST /analyze/xray`: Analyze X-ray images
-- `GET /health`: Health check
+### Vision AI (`:8001`)
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Health check |
+| POST | `/analyze_image/` | Analyze image (form: `image`, `human_prompt`) |
 
-### Chatbot API (Port 8502)
-- `GET /`: Serve HTML interface
-- `POST /load_pdf/`: Upload and process PDF documents
-- `POST /chat`: Chat with the AI assistant
+### Imaging (`:8002`)
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/health` | Health check |
+| GET | `/models` | Available models |
+| POST | `/analyze/xray` | Analyze X-ray (file + `confidence_threshold`) |
 
+<<<<<<< HEAD
+---
+
+## Disclaimer
+
+Tammeny is for educational and demonstration purposes only. It is **not** a medical device and should **not** be used as a substitute for professional medical advice, diagnosis, or treatment.
+
+---
+=======
 ### Live Medical Procedure API (Port 8001)
 - `POST /analyze_image/`: Analyze medical images using external AI
 
@@ -185,3 +214,4 @@ curl -X POST "http://localhost:8502/chat" -H "Content-Type: application/json" -d
 ## Disclaimer
 
 This is a demonstration project for educational purposes. It is not intended for clinical use or as a substitute for professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare professionals for medical decisions.
+>>>>>>> af3b3deb2182e40a9c6ca7435e2ac92e629f37e9
