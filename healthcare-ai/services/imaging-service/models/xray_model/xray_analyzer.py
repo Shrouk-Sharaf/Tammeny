@@ -1,8 +1,3 @@
-"""
-Tammeny — X-Ray Analyzer
-Wraps model loading, preprocessing, and inference into a single class.
-"""
-
 import uuid
 import torch
 from model_loader import XRayModelLoader
@@ -19,10 +14,6 @@ class XRayAnalyzer:
         return self.model_loader.load_nih_model()
 
     def analyze_xray(self, image_file, confidence_threshold: float = 0.5) -> dict:
-        """
-        Run inference on a file-like image object.
-        Returns a dict with findings, recommendations, and metadata.
-        """
         try:
             if hasattr(image_file, "seek"):
                 image_file.seek(0)

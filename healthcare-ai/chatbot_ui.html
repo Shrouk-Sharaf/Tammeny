@@ -3,692 +3,906 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>طمني — مساعدك الصحي | Tammeny Health Assistant</title>
+  <title>طمني — Tammeny Health Assistant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
+    /* ══════════ TOKENS ══════════ */
     :root {
-      --bg: #0b1120;
-      --surface: #131e35;
-      --surface2: #1a2844;
-      --border: rgba(99,179,237,0.15);
-      --accent: #38bdf8;
-      --accent2: #34d399;
-      --text: #e2e8f0;
-      --text-muted: #8ba3c1;
-      --danger: #f87171;
-      --mic-active: #f87171;
-      --radius: 16px;
+      --bg:      #080e1a;
+      --glass:   rgba(255,255,255,0.03);
+      --glass2:  rgba(255,255,255,0.06);
+      --border:  rgba(96,165,250,0.12);
+      --border2: rgba(96,165,250,0.22);
+      --teal:    #2dd4bf;
+      --blue:    #60a5fa;
+      --violet:  #a78bfa;
+      --text:    #e2e8f0;
+      --muted:   #64748b;
+      --danger:  #f87171;
+      --success: #34d399;
+      --warn:    #fbbf24;
+      --r:       18px;
       --font-ar: 'Tajawal', sans-serif;
-      --font-en: 'DM Sans', sans-serif;
+      --font-en: 'Syne', sans-serif;
+      --shadow:  0 20px 60px rgba(0,0,0,0.5);
     }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
+    /* ══════════ BASE ══════════ */
     body {
       font-family: var(--font-ar);
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 16px 32px;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; overflow-x: hidden;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 15% 10%, rgba(45,212,191,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 60% at 85% 90%, rgba(96,165,250,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(167,139,250,0.04) 0%, transparent 70%);
+    }
+    body::after {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
       background-image:
-        radial-gradient(ellipse at 20% 20%, rgba(56,189,248,0.07) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 80%, rgba(52,211,153,0.05) 0%, transparent 60%);
+        linear-gradient(rgba(96,165,250,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,165,250,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
     }
 
-    /* ── Header ── */
-    header {
-      width: 100%;
-      max-width: 700px;
-      padding: 32px 0 20px;
-      text-align: center;
+    /* ══════════ LAYOUT ══════════ */
+    .app {
+      position: relative; z-index: 1; width: 100%; max-width: 860px;
+      padding: 0 16px 60px; display: flex; flex-direction: column; align-items: center;
     }
 
-    .logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
+    /* ══════════ HEADER ══════════ */
+    header { width: 100%; padding: 40px 0 28px; text-align: center; }
+
+    .logo-ring {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 64px; height: 64px; border-radius: 20px;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+      font-size: 30px; margin-bottom: 16px;
+      box-shadow: 0 0 40px rgba(45,212,191,0.35);
+      animation: floatRing 3s ease-in-out infinite;
+    }
+    @keyframes floatRing {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-6px) rotate(3deg); }
     }
 
-    .logo-icon {
-      width: 48px; height: 48px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 14px;
+    .logo-title {
+      font-family: var(--font-en); font-size: 2.4rem; font-weight: 800;
+      background: linear-gradient(90deg, var(--teal) 0%, var(--blue) 50%, var(--violet) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      letter-spacing: -0.5px; line-height: 1; margin-bottom: 6px;
+    }
+    .logo-sub { font-size: 0.9rem; color: var(--muted); }
+
+    .controls-row {
       display: flex; align-items: center; justify-content: center;
-      font-size: 24px;
+      gap: 10px; margin-top: 20px; flex-wrap: wrap;
     }
-
-    .logo h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .pill-group {
+      display: flex; background: var(--glass2); border: 1px solid var(--border);
+      border-radius: 50px; padding: 3px; gap: 2px;
     }
-
-    .tagline {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      margin-top: 4px;
+    .pill-btn {
+      padding: 7px 18px; border-radius: 50px; border: none; background: transparent;
+      color: var(--muted); font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; font-family: var(--font-ar); white-space: nowrap;
     }
+    .pill-btn.active { background: linear-gradient(135deg, var(--teal), var(--blue)); color: #080e1a; }
 
-    /* ── Language Toggle ── */
-    .lang-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin: 16px 0;
+    /* ══════════ TABS ══════════ */
+    .mode-tabs { display: flex; width: 100%; gap: 6px; }
+    .mode-tab {
+      flex: 1; padding: 14px 8px;
+      background: var(--glass); border: 1px solid var(--border); border-bottom: none;
+      border-radius: 14px 14px 0 0; color: var(--muted);
+      font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.22s;
+      font-family: var(--font-ar); display: flex; align-items: center; justify-content: center; gap: 6px;
     }
+    .mode-tab:hover  { color: var(--text); background: var(--glass2); }
+    .mode-tab.active { background: var(--glass2); border-color: var(--border2); color: var(--teal); }
+    .tab-icon { font-size: 1rem; }
 
-    .lang-btn {
-      padding: 8px 20px;
-      border-radius: 50px;
-      border: 1.5px solid var(--border);
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: var(--font-ar);
+    /* ══════════ CARD / PANELS ══════════ */
+    .card {
+      width: 100%; background: var(--glass2); border: 1px solid var(--border2);
+      border-radius: 0 0 var(--r) var(--r); box-shadow: var(--shadow);
+      backdrop-filter: blur(20px); display: flex; flex-direction: column; overflow: hidden;
     }
+    .panel { display: none; flex-direction: column; flex: 1; }
+    .panel.active { display: flex; }
 
-    .lang-btn.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #0b1120;
-      font-weight: 700;
-    }
-
-    /* ── Main Chat Card ── */
-    .chat-card {
-      width: 100%;
-      max-width: 700px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      min-height: 520px;
-      max-height: 70vh;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
-    }
-
-    /* ── PDF Upload Bar ── */
-    .upload-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      background: var(--surface2);
-      border-bottom: 1px solid var(--border);
-      flex-wrap: wrap;
-    }
-
-    .upload-bar label {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    .upload-bar input[type="file"] {
-      flex: 1;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      background: transparent;
-      border: none;
-      outline: none;
-      min-width: 0;
-    }
-
-    .upload-bar input[type="file"]::-webkit-file-upload-button {
-      background: var(--surface);
-      color: var(--accent);
-      border: 1px solid var(--accent);
-      border-radius: 8px;
-      padding: 4px 10px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      margin-inline-end: 8px;
-      font-family: var(--font-ar);
-    }
-
-    .btn-upload {
-      padding: 6px 16px;
-      background: var(--accent2);
-      color: #0b1120;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      font-family: var(--font-ar);
-      transition: opacity 0.2s;
-    }
-    .btn-upload:hover { opacity: 0.85; }
-
-    /* ── Chatbox ── */
-    .chatbox {
-      flex: 1;
-      padding: 20px 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      scroll-behavior: smooth;
-    }
-
-    .chatbox::-webkit-scrollbar { width: 4px; }
-    .chatbox::-webkit-scrollbar-track { background: transparent; }
-    .chatbox::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-    /* ── Messages ── */
-    .msg {
-      max-width: 82%;
-      padding: 12px 16px;
-      border-radius: 14px;
-      font-size: 1rem;
-      line-height: 1.6;
-      animation: fadeUp 0.25s ease;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .msg-bot {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      align-self: flex-start;
-      border-bottom-right-radius: 4px;
-    }
-
-    .msg-user {
-      background: linear-gradient(135deg, #1e4a7a, #1a3a5c);
-      border: 1px solid rgba(56,189,248,0.25);
-      align-self: flex-end;
-      border-bottom-left-radius: 4px;
-      text-align: start;
-    }
-
-    .msg-system {
-      align-self: center;
-      background: rgba(52,211,153,0.1);
-      border: 1px solid rgba(52,211,153,0.25);
-      color: var(--accent2);
-      font-size: 0.85rem;
-      padding: 8px 16px;
-      border-radius: 50px;
-    }
-
-    .msg-error {
-      align-self: center;
-      background: rgba(248,113,113,0.1);
-      border: 1px solid rgba(248,113,113,0.25);
-      color: var(--danger);
-      font-size: 0.85rem;
-      padding: 8px 16px;
-      border-radius: 50px;
-    }
-
-    /* Thinking dots */
-    .thinking {
-      display: flex; gap: 5px; align-items: center; padding: 4px 0;
-    }
-    .thinking span {
-      width: 7px; height: 7px;
-      background: var(--accent);
-      border-radius: 50%;
-      animation: bounce 1.2s infinite;
-    }
-    .thinking span:nth-child(2) { animation-delay: 0.2s; }
-    .thinking span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce {
-      0%,80%,100% { transform: scale(0.7); opacity: 0.5; }
-      40%          { transform: scale(1);   opacity: 1; }
-    }
-
-    /* ── Input Area ── */
-    .input-area {
-      padding: 14px 16px;
-      background: var(--surface2);
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-    }
-
-    .input-area textarea {
-      flex: 1;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
-      color: var(--text);
-      font-size: 0.95rem;
-      font-family: var(--font-ar);
-      resize: none;
-      outline: none;
-      min-height: 48px;
-      max-height: 120px;
-      line-height: 1.5;
-      transition: border-color 0.2s;
-    }
-
-    .input-area textarea:focus {
-      border-color: var(--accent);
-    }
-
-    .input-area textarea::placeholder {
-      color: var(--text-muted);
-    }
-
-    /* Icon buttons */
-    .icon-btn {
-      width: 48px; height: 48px;
-      border-radius: 12px;
-      border: 1.5px solid var(--border);
-      background: var(--bg);
-      color: var(--text-muted);
-      font-size: 1.2rem;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      flex-shrink: 0;
-    }
-
-    .icon-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    /* Mic button */
-    #mic-btn { position: relative; }
-
-    #mic-btn.recording {
-      background: rgba(248,113,113,0.15);
-      border-color: var(--mic-active);
-      color: var(--mic-active);
-      animation: pulse-ring 1.2s infinite;
-    }
-
-    @keyframes pulse-ring {
-      0%   { box-shadow: 0 0 0 0   rgba(248,113,113,0.4); }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes spin   { to { transform: rotate(360deg); } }
+    @keyframes blink  { 0%,80%,100% { transform:scale(0.6); opacity:0.4; } 40% { transform:scale(1); opacity:1; } }
+    @keyframes pulseRing {
+      0%   { box-shadow: 0 0 0 0    rgba(248,113,113,0.4); }
       70%  { box-shadow: 0 0 0 10px rgba(248,113,113,0); }
-      100% { box-shadow: 0 0 0 0   rgba(248,113,113,0); }
+      100% { box-shadow: 0 0 0 0    rgba(248,113,113,0); }
     }
 
-    /* Send button */
-    #send-btn {
-      background: linear-gradient(135deg, var(--accent), #0ea5e9);
-      border-color: transparent;
-      color: #0b1120;
-      font-weight: 700;
+    /* ══════════ CHAT PANEL ══════════ */
+    .upload-strip {
+      display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+      background: rgba(45,212,191,0.05); border-bottom: 1px solid var(--border); flex-wrap: wrap;
     }
-
-    #send-btn:hover {
-      opacity: 0.85;
-      color: #0b1120;
+    .upload-strip label.lbl { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+    .upload-strip input[type="file"] { flex:1; font-size:0.8rem; color:var(--muted); background:transparent; border:none; outline:none; min-width:0; }
+    .upload-strip input[type="file"]::-webkit-file-upload-button {
+      background: var(--bg); color: var(--teal); border: 1px solid var(--border2);
+      border-radius: 8px; padding: 4px 10px; font-size: 0.78rem; cursor: pointer;
+      margin-inline-end: 8px; font-family: var(--font-ar);
     }
+    .btn-small {
+      padding: 6px 14px; border-radius: 8px; border: none;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+      color: #080e1a; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; white-space: nowrap; font-family: var(--font-ar); transition: opacity 0.2s;
+    }
+    .btn-small:hover { opacity: 0.85; }
 
-    /* ── Status bar ── */
+    .chatbox {
+      flex: 1; padding: 20px 18px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 14px;
+      min-height: 380px; max-height: 480px; scroll-behavior: smooth;
+    }
+    .chatbox::-webkit-scrollbar { width: 3px; }
+    .chatbox::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+    .msg { max-width: 80%; padding: 12px 16px; border-radius: 16px; font-size: 0.95rem; line-height: 1.7; animation: fadeUp 0.22s ease; }
+    .msg-bot    { background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.15); align-self: flex-start; border-bottom-right-radius: 4px; }
+    .msg-user   { background: linear-gradient(135deg, rgba(45,212,191,0.15), rgba(96,165,250,0.12)); border: 1px solid rgba(45,212,191,0.2); align-self: flex-end; border-bottom-left-radius: 4px; }
+    .msg-system { align-self: center; background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2); color: var(--success); font-size: 0.82rem; padding: 7px 16px; border-radius: 50px; }
+    .msg-error  { align-self: center; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); color: var(--danger); font-size: 0.82rem; padding: 7px 16px; border-radius: 50px; }
+
+    .thinking { display: flex; gap: 5px; align-items: center; padding: 4px 0; }
+    .thinking span { width: 6px; height: 6px; border-radius: 50%; animation: blink 1.2s infinite; }
+    .thinking span:nth-child(1) { background: var(--teal); }
+    .thinking span:nth-child(2) { background: var(--blue);   animation-delay: 0.2s; }
+    .thinking span:nth-child(3) { background: var(--violet); animation-delay: 0.4s; }
+
+    .welcome-card { align-self: center; text-align: center; padding: 28px 20px; color: var(--muted); max-width: 380px; }
+    .welcome-card .w-icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+    .welcome-card p { font-size: 0.9rem; line-height: 1.8; }
+
+    .input-area {
+      padding: 12px 16px; background: rgba(0,0,0,0.2);
+      border-top: 1px solid var(--border); display: flex; gap: 8px; align-items: flex-end;
+    }
+    .input-area textarea {
+      flex: 1; background: rgba(255,255,255,0.04); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 11px 14px; color: var(--text); font-size: 0.92rem;
+      font-family: var(--font-ar); resize: none; outline: none;
+      min-height: 46px; max-height: 120px; line-height: 1.5; transition: border-color 0.2s;
+    }
+    .input-area textarea:focus { border-color: var(--teal); }
+    .input-area textarea::placeholder { color: var(--muted); }
+
+    .icon-btn {
+      width: 46px; height: 46px; border-radius: 12px;
+      border: 1.5px solid var(--border); background: rgba(255,255,255,0.04);
+      color: var(--muted); font-size: 1.15rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.18s; flex-shrink: 0;
+    }
+    .icon-btn:hover { border-color: var(--teal); color: var(--teal); }
+    #mic-btn.recording { background: rgba(248,113,113,0.12); border-color: var(--danger); color: var(--danger); animation: pulseRing 1.2s infinite; }
+    .send-btn { background: linear-gradient(135deg, var(--teal), var(--blue)); border-color: transparent; color: #080e1a; font-weight: 700; }
+    .send-btn:hover { opacity: 0.85; color: #080e1a; border-color: transparent; }
+
     .status-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 16px;
-      background: var(--surface2);
-      border-top: 1px solid var(--border);
-      font-size: 0.78rem;
-      color: var(--text-muted);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 16px; background: rgba(0,0,0,0.15);
+      border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--muted);
     }
-
-    #voice-status { color: var(--accent2); font-weight: 500; }
-
-    /* Speaker toggle */
-    .speaker-toggle {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      font-size: 0.78rem;
-    }
-
+    #voice-status { color: var(--success); font-weight: 600; }
+    .speaker-toggle { display: flex; align-items: center; gap: 6px; cursor: pointer; }
     .speaker-toggle input { display: none; }
+    .toggle-pill { width: 30px; height: 16px; background: var(--border); border-radius: 8px; position: relative; transition: background 0.2s; }
+    .toggle-pill::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; background: white; border-radius: 50%; transition: transform 0.2s; }
+    .speaker-toggle input:checked + .toggle-pill { background: var(--teal); }
+    .speaker-toggle input:checked + .toggle-pill::after { transform: translateX(14px); }
 
-    .toggle-pill {
-      width: 32px; height: 18px;
-      background: var(--border);
-      border-radius: 9px;
-      position: relative;
-      transition: background 0.2s;
-    }
+    /* ══════════ IMAGE ANALYSIS PANEL ══════════ */
+    .img-panel-inner { display: flex; flex-direction: column; height: 580px; }
 
-    .toggle-pill::after {
-      content: '';
-      position: absolute;
-      top: 2px; left: 2px;
-      width: 14px; height: 14px;
-      background: white;
-      border-radius: 50%;
-      transition: transform 0.2s;
+    .img-top-bar { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+    .img-mode-row { display: flex; gap: 8px; }
+    .img-mode-btn {
+      flex: 1; padding: 9px 8px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: transparent; color: var(--muted);
+      font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+      font-family: var(--font-ar); text-align: center;
     }
+    .img-mode-btn.active { background: rgba(45,212,191,0.08); border-color: var(--teal); color: var(--teal); }
 
-    .speaker-toggle input:checked + .toggle-pill {
-      background: var(--accent2);
-    }
+    .threshold-row { display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--muted); }
+    input[type="range"] { flex: 1; height: 4px; border-radius: 2px; outline: none; cursor: pointer; background: linear-gradient(90deg, var(--teal) 50%, var(--border) 50%); }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--teal); border-radius: 50%; box-shadow: 0 0 8px rgba(45,212,191,0.5); }
+    #threshold-val { min-width: 36px; text-align: center; font-weight: 700; color: var(--teal); }
 
-    .speaker-toggle input:checked + .toggle-pill::after {
-      transform: translateX(14px);
-    }
+    .img-body-row { display: flex; flex: 1; overflow: hidden; }
+    .img-left { width: 340px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px; padding: 16px; overflow-y: auto; }
+    .img-left::-webkit-scrollbar { width: 3px; }
+    .img-left::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    .img-right { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-    /* ── Welcome message ── */
-    .welcome {
-      text-align: center;
-      padding: 20px 16px;
-      color: var(--text-muted);
-    }
-    .welcome .icon { font-size: 2.5rem; margin-bottom: 10px; }
-    .welcome p { font-size: 0.9rem; line-height: 1.7; }
+    .drop-zone { border: 2px dashed var(--border2); border-radius: var(--r); padding: 28px 16px; text-align: center; cursor: pointer; transition: all 0.22s; background: var(--glass); position: relative; flex-shrink: 0; }
+    .drop-zone:hover, .drop-zone.drag-over { border-color: var(--teal); background: rgba(45,212,191,0.05); }
+    .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .drop-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+    .drop-text { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+    .drop-hint { font-size: 0.72rem; color: var(--muted); margin-top: 4px; opacity: 0.6; }
+
+    .img-preview-wrap { display: none; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid var(--border2); flex-shrink: 0; }
+    .img-preview-wrap.has-image { display: block; }
+    .img-preview-wrap img { width: 100%; max-height: 200px; object-fit: contain; display: block; background: rgba(0,0,0,0.3); }
+    .img-clear-btn { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,0.65); border: 1px solid var(--border2); color: var(--text); font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    .img-clear-btn:hover { background: rgba(248,113,113,0.35); color: var(--danger); }
+
+    .img-prompt-row { display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0; }
+    .img-prompt-row textarea { flex: 1; background: rgba(255,255,255,0.04); border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 12px; color: var(--text); font-size: 0.85rem; font-family: var(--font-ar); resize: none; outline: none; min-height: 42px; max-height: 80px; line-height: 1.5; transition: border-color 0.2s; }
+    .img-prompt-row textarea:focus { border-color: var(--teal); }
+    .img-prompt-row textarea::placeholder { color: var(--muted); }
+
+    .btn-analyze { padding: 10px 18px; background: linear-gradient(135deg, var(--teal), var(--blue)); border: none; border-radius: 10px; color: #080e1a; font-size: 0.85rem; font-weight: 700; cursor: pointer; font-family: var(--font-ar); transition: opacity 0.2s; white-space: nowrap; flex-shrink: 0; }
+    .btn-analyze:hover { opacity: 0.85; }
+    .btn-analyze:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .img-result-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); font-size: 0.85rem; gap: 10px; padding: 24px; text-align: center; opacity: 0.5; }
+    .img-result-placeholder .ph-icon { font-size: 2.5rem; }
+
+    .img-result { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+    .img-result.visible { display: flex; }
+    .img-result-header { padding: 12px 18px; background: rgba(45,212,191,0.06); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--muted); flex-shrink: 0; }
+    .result-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 50px; }
+    .badge-ai  { background: rgba(167,139,250,0.15); color: var(--violet); border: 1px solid rgba(167,139,250,0.3); }
+    .badge-low { background: rgba(52,211,153,0.12);  color: var(--success); border: 1px solid rgba(52,211,153,0.25); }
+    .badge-med { background: rgba(251,191,36,0.12);  color: var(--warn);    border: 1px solid rgba(251,191,36,0.25); }
+    .badge-hi  { background: rgba(248,113,113,0.12); color: var(--danger);  border: 1px solid rgba(248,113,113,0.25); }
+
+    .img-result-body { flex: 1; padding: 16px; font-size: 0.88rem; line-height: 1.8; color: var(--text); overflow-y: auto; }
+    .img-result-body::-webkit-scrollbar { width: 3px; }
+    .img-result-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+    .spinner-wrap { display: none; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 14px; color: var(--muted); font-size: 0.85rem; }
+    .spinner-wrap.visible { display: flex; }
+    .spinner { width: 38px; height: 38px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.8s linear infinite; }
+
+    .findings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .finding-card { background: var(--glass2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+    .finding-name { font-weight: 700; font-size: 0.82rem; margin-bottom: 3px; color: var(--text); }
+    .finding-conf { font-size: 0.72rem; color: var(--muted); margin-bottom: 5px; }
+    .conf-bar  { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.06); overflow: hidden; }
+    .conf-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--teal), var(--blue)); }
+    .finding-advice { font-size: 0.72rem; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+    .summary-card { padding: 12px 14px; border-radius: 10px; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.7; }
+    .summary-low    { background: rgba(52,211,153,0.07);  border: 1px solid rgba(52,211,153,0.2); }
+    .summary-medium { background: rgba(251,191,36,0.07);  border: 1px solid rgba(251,191,36,0.2); }
+    .summary-high   { background: rgba(248,113,113,0.07); border: 1px solid rgba(248,113,113,0.2); }
+
+    /* ══════════ WEB SEARCH PANEL ══════════ */
+    .search-panel-inner { display: flex; flex-direction: column; height: 580px; }
+
+    .search-top-bar { padding: 16px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .search-input-row { display: flex; gap: 8px; }
+    .search-input { flex: 1; background: rgba(255,255,255,0.04); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 16px; color: var(--text); font-size: 0.92rem; font-family: var(--font-ar); outline: none; transition: border-color 0.2s; }
+    .search-input:focus { border-color: var(--blue); }
+    .search-input::placeholder { color: var(--muted); }
+    .btn-search { padding: 12px 20px; background: linear-gradient(135deg, var(--blue), var(--violet)); border: none; border-radius: 12px; color: #080e1a; font-size: 0.88rem; font-weight: 700; cursor: pointer; font-family: var(--font-ar); transition: opacity 0.2s; white-space: nowrap; }
+    .btn-search:hover { opacity: 0.85; }
+    .btn-search:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .search-scroll-area { flex: 1; overflow-y: auto; padding: 16px 18px 20px; display: flex; flex-direction: column; }
+    .search-scroll-area::-webkit-scrollbar { width: 4px; }
+    .search-scroll-area::-webkit-scrollbar-track { background: transparent; }
+    .search-scroll-area::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+    .search-result-card { background: var(--glass2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 14px; animation: fadeUp 0.22s ease; transition: border-color 0.2s, box-shadow 0.2s; }
+    .search-result-card:hover { border-color: rgba(96,165,250,0.35); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+
+    .src-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(96,165,250,0.05); border-bottom: 1px solid var(--border); }
+    .src-num { width: 22px; height: 22px; flex-shrink: 0; background: linear-gradient(135deg, var(--blue), var(--violet)); border-radius: 6px; font-size: 0.68rem; font-weight: 800; color: #080e1a; display: flex; align-items: center; justify-content: center; }
+    .src-domain { flex: 1; font-size: 0.74rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: ltr; }
+    .src-open { font-size: 0.72rem; color: var(--blue); text-decoration: none; font-weight: 600; flex-shrink: 0; padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(96,165,250,0.25); transition: all 0.18s; }
+    .src-open:hover { background: rgba(96,165,250,0.12); color: var(--teal); }
+
+    .src-body { padding: 14px 16px 16px; font-size: 0.875rem; line-height: 1.8; color: var(--text); direction: ltr; }
+    .src-body .md-h1 { font-family: var(--font-en); font-size: 1rem; font-weight: 700; color: var(--teal); margin: 0 0 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(45,212,191,0.18); line-height: 1.4; }
+    .src-body .md-h2 { font-size: 0.9rem; font-weight: 700; color: var(--blue); margin: 12px 0 6px; }
+    .src-body .md-h3 { font-size: 0.85rem; font-weight: 700; color: var(--muted); margin: 10px 0 4px; }
+    .src-body .md-p  { margin: 0 0 10px; color: var(--text); }
+    .src-body .md-p:last-child { margin-bottom: 0; }
+    .src-body .md-ul { margin: 6px 0 12px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .src-body .md-ul li { display: flex; gap: 9px; align-items: flex-start; font-size: 0.86rem; color: var(--text); line-height: 1.65; }
+    .src-body .md-ul li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); flex-shrink: 0; margin-top: 8px; }
+    .src-body .md-bold { font-weight: 700; }
+    .src-body .md-hr   { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+
+    .search-spinner-wrap { display: none; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 14px; color: var(--muted); font-size: 0.85rem; padding: 40px 0; }
+    .search-spinner-wrap.visible { display: flex; }
+    .search-spinner { width: 34px; height: 34px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+
+    .search-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; text-align: center; padding: 48px 20px; color: var(--muted); min-height: 220px; }
+    .search-empty .s-icon { font-size: 2.4rem; display: block; margin-bottom: 12px; opacity: 0.4; }
+    .search-empty p { font-size: 0.88rem; line-height: 1.7; max-width: 300px; }
+
+    /* ══════════ DISCLAIMER ══════════ */
+    .disclaimer { width: 100%; text-align: center; font-size: 0.72rem; color: var(--muted); margin-top: 24px; opacity: 0.65; line-height: 1.6; }
   </style>
 </head>
 <body>
+<div class="app">
 
   <header>
-    <div class="logo">
-      <div class="logo-icon">🏥</div>
-      <h1>طمني | Tammeny</h1>
-    </div>
-    <p class="tagline" id="tagline">مساعدك الصحي الذكي — اسأل بصوتك أو بالكتابة</p>
-
-    <div class="lang-toggle">
-      <button class="lang-btn active" id="btn-ar" onclick="setLang('ar')">🇪🇬 عربي</button>
-      <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇬🇧 English</button>
+    <div class="logo-ring">🩺</div>
+    <div class="logo-title">Tammeny · طمني</div>
+    <p class="logo-sub" id="tagline">مساعدك الصحي الذكي — اسأل بصوتك أو بالكتابة</p>
+    <div class="controls-row">
+      <div class="pill-group">
+        <button class="pill-btn active" id="btn-ar" onclick="setLang('ar')">🇪🇬 عربي</button>
+        <button class="pill-btn"        id="btn-en" onclick="setLang('en')">🇬🇧 English</button>
+      </div>
     </div>
   </header>
 
-  <div class="chat-card">
+  <div class="mode-tabs" style="width:100%;">
+    <button class="mode-tab active" id="tab-chat"   onclick="switchTab('chat')">
+      <span class="tab-icon">💬</span><span id="lbl-tab-chat">محادثة</span>
+    </button>
+    <button class="mode-tab" id="tab-vision" onclick="switchTab('vision')">
+      <span class="tab-icon">🩻</span><span id="lbl-tab-vision">تحليل الصور</span>
+    </button>
+    <button class="mode-tab" id="tab-search" onclick="switchTab('search')">
+      <span class="tab-icon">🔎</span><span id="lbl-tab-search">بحث طبي</span>
+    </button>
+  </div>
 
-    <!-- PDF Upload -->
-    <div class="upload-bar" id="uploadBar">
-      <label id="lbl-upload">📄</label>
-      <input type="file" id="pdfInput" accept=".pdf" />
-      <button class="btn-upload" onclick="uploadPDF()" id="btn-upload-lbl">رفع ملف PDF</button>
-    </div>
+  <div class="card" style="width:100%;">
 
-    <!-- Chat messages -->
-    <div class="chatbox" id="chatbox">
-      <div class="welcome" id="welcomeMsg">
-        <div class="icon">🩺</div>
-        <p id="welcome-text">مرحباً! أنا طمني، مساعدك الصحي.<br>يمكنك سؤالي بالكتابة أو بالضغط على زر المايكروفون والتحدث.<br>يمكنك أيضاً رفع ملف PDF طبي لأجيب عليك منه.</p>
+    <!-- PANEL 1: CHAT -->
+    <div class="panel active" id="panel-chat">
+      <div class="upload-strip" id="uploadBar">
+        <label class="lbl">📄</label>
+        <input type="file" id="pdfInput" accept=".pdf" />
+        <button class="btn-small" id="btn-upload-lbl" onclick="uploadPDF()">رفع ملف PDF</button>
+      </div>
+      <div class="chatbox" id="chatbox">
+        <div class="welcome-card" id="welcomeMsg">
+          <span class="w-icon">🏥</span>
+          <p id="welcome-text">مرحباً! أنا طمني، مساعدك الصحي.<br>يمكنك سؤالي بالكتابة أو بالضغط على زر المايكروفون والتحدث.<br>يمكنك أيضاً رفع ملف PDF طبي لأجيب عليك منه.</p>
+        </div>
+      </div>
+      <div class="input-area">
+        <button class="icon-btn" id="mic-btn" onclick="toggleMic()">🎤</button>
+        <textarea id="userInput" rows="1" placeholder="اكتب سؤالك هنا..."
+          oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+        <button class="icon-btn send-btn" onclick="handleChat()">➤</button>
+      </div>
+      <div class="status-bar">
+        <span id="voice-status"></span>
+        <label class="speaker-toggle">
+          <input type="checkbox" id="speakerToggle" checked>
+          <span class="toggle-pill"></span>
+          🔊 <span id="lbl-speaker">قراءة الإجابة</span>
+        </label>
       </div>
     </div>
 
-    <!-- Input area -->
-    <div class="input-area">
-      <button class="icon-btn" id="mic-btn" onclick="toggleMic()" title="تحدث">🎤</button>
-      <textarea id="userInput" rows="1" placeholder="اكتب سؤالك هنا..." oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
-      <button class="icon-btn" id="send-btn" onclick="handleChat()" title="إرسال">➤</button>
+    <!-- PANEL 2: IMAGE ANALYSIS -->
+    <div class="panel" id="panel-vision">
+      <div class="img-panel-inner">
+        <div class="img-top-bar">
+          <div class="img-mode-row">
+            <button class="img-mode-btn active" id="vbtn-general" onclick="setVisionMode('general')">
+              🔬 <span id="lbl-v-general">تحليل صورة طبية</span>
+            </button>
+            <button class="img-mode-btn" id="vbtn-xray" onclick="setVisionMode('xray')">
+              🫁 <span id="lbl-v-xray">تحليل الأشعة السينية</span>
+            </button>
+          </div>
+          <div class="threshold-row" id="threshold-row" style="display:none;">
+            <span id="lbl-threshold">دقة الكشف:</span>
+            <input type="range" id="threshold-slider" min="10" max="90" value="50" oninput="updateThreshold(this.value)">
+            <span id="threshold-val">0.50</span>
+          </div>
+        </div>
+        <div class="img-body-row">
+          <div class="img-left">
+            <div class="drop-zone" id="dropZone"
+              ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+              <input type="file" id="imgInput" accept="image/jpeg,image/jpg,image/png" onchange="onImageSelected(event)">
+              <span class="drop-icon">🖼️</span>
+              <div class="drop-text" id="lbl-drop">اسحب صورة هنا أو اضغط للاختيار</div>
+              <div class="drop-hint" id="lbl-drop-hint">JPG · PNG · حتى 10 MB</div>
+            </div>
+            <div class="img-preview-wrap" id="previewWrap">
+              <img id="imgPreview" src="" alt="preview">
+              <button class="img-clear-btn" onclick="clearImage()">✕</button>
+            </div>
+            <div class="img-prompt-row" id="promptRow">
+              <textarea id="imgPrompt" rows="1" placeholder="اكتب سؤالك عن الصورة..." oninput="autoResize(this)"></textarea>
+            </div>
+            <button class="btn-analyze" id="btn-analyze" onclick="analyzeImage()" disabled style="width:100%;margin-top:auto;">
+              🔍 <span id="lbl-analyze">تحليل</span>
+            </button>
+          </div>
+          <div class="img-right">
+            <div class="spinner-wrap" id="imgSpinner">
+              <div class="spinner"></div>
+              <span id="lbl-analyzing">جاري التحليل...</span>
+            </div>
+            <div class="img-result-placeholder" id="imgPlaceholder">
+              <span class="ph-icon">🩻</span>
+              <span id="lbl-ph">ارفع صورة واضغط تحليل لعرض النتائج هنا</span>
+            </div>
+            <div class="img-result" id="imgResult">
+              <div class="img-result-header">
+                <span id="result-label">نتيجة التحليل</span>
+                <span class="result-badge badge-ai" id="result-badge">🤖 AI</span>
+              </div>
+              <div class="img-result-body" id="imgResultBody"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Status bar -->
-    <div class="status-bar">
-      <span id="voice-status"></span>
-      <label class="speaker-toggle" title="تشغيل الصوت">
-        <input type="checkbox" id="speakerToggle" checked>
-        <span class="toggle-pill"></span>
-        🔊 <span id="lbl-speaker">قراءة الإجابة</span>
-      </label>
+    <!-- PANEL 3: WEB SEARCH -->
+    <div class="panel" id="panel-search">
+      <div class="search-panel-inner">
+        <div class="search-top-bar">
+          <div class="search-input-row">
+            <input type="text" class="search-input" id="searchInput"
+              placeholder="ابحث عن موضوع طبي..."
+              onkeydown="if(event.key==='Enter') doSearch()">
+            <button class="btn-search" id="btn-search-go" onclick="doSearch()">
+              🔍 <span id="lbl-search-btn">بحث</span>
+            </button>
+          </div>
+        </div>
+        <div class="search-scroll-area" id="searchScrollArea">
+          <div class="search-spinner-wrap" id="searchSpinner">
+            <div class="search-spinner"></div>
+            <span id="lbl-searching">جاري البحث...</span>
+          </div>
+          <div class="search-empty" id="searchEmpty">
+            <span class="s-icon">🔎</span>
+            <p id="lbl-search-empty">ابحث عن أي موضوع طبي للحصول على معلومات محدّثة من الويب.</p>
+          </div>
+        </div>
+      </div>
     </div>
 
-  </div>
+  </div><!-- /card -->
+
+  <p class="disclaimer" id="lbl-disclaimer">
+    طمني أداة مساعدة للمعلومات الصحية فقط. لا تُستخدم للتشخيص أو العلاج. استشر طبيبك دائماً.<br>
+    Tammeny is a health information assistant only — not a substitute for professional medical advice.
+  </p>
+
+</div><!-- /app -->
 
 <script>
-  /* ═══════════════════════════════════════════
-     CONFIG
-  ═══════════════════════════════════════════ */
-  const API_BASE = "http://localhost:8000";
-  const SESSION_ID = "tammeny_session_" + Date.now();
+/* ══════════ CONFIG ══════════ */
+const CHAT_API   = 'http://localhost:8000'; // rag_chatbot.py
+const VISION_API = 'http://localhost:8001'; // Live_MedProc.py
+const XRAY_API   = 'http://localhost:8002'; // server.py
+const SEARCH_API = 'http://localhost:8003'; // main.py
+const SESSION_ID = 'tammeny_' + Date.now();
 
-  let currentLang = 'ar';
-  let isRecording = false;
-  let recognition = null;
+/* ══════════ STATE ══════════ */
+let currentLang  = 'ar';
+let isRecording  = false;
+let recognition  = null;
+let visionMode   = 'general';
+let selectedFile = null;
 
-  /* ═══════════════════════════════════════════
-     LANGUAGE
-  ═══════════════════════════════════════════ */
-  const i18n = {
-    ar: {
-      tagline: "مساعدك الصحي الذكي — اسأل بصوتك أو بالكتابة",
-      placeholder: "اكتب سؤالك هنا...",
-      upload: "رفع ملف PDF",
-      speaker: "قراءة الإجابة",
-      welcome: "مرحباً! أنا طمني، مساعدك الصحي.<br>يمكنك سؤالي بالكتابة أو بالضغط على زر المايكروفون والتحدث.<br>يمكنك أيضاً رفع ملف PDF طبي لأجيب عليك منه.",
-      listening: "🎤 جاري الاستماع...",
-      uploaded: "✅ تم رفع الملف! يمكنك الآن السؤال عنه.",
-      uploadErr: "❌ فشل رفع الملف",
-      errResponse: "❌ حدث خطأ في الاتصال",
-      dir: "rtl", lang: "ar-EG"
-    },
-    en: {
-      tagline: "Your AI health assistant — ask by voice or typing",
-      placeholder: "Type your question here...",
-      upload: "Upload PDF",
-      speaker: "Read answer aloud",
-      welcome: "Hello! I'm Tammeny, your health assistant.<br>Type your question or press the microphone button to speak.<br>You can also upload a medical PDF for me to answer from.",
-      listening: "🎤 Listening...",
-      uploaded: "✅ File uploaded! You can now ask questions about it.",
-      uploadErr: "❌ Failed to upload file",
-      errResponse: "❌ Connection error",
-      dir: "ltr", lang: "en-US"
-    }
+/* ══════════ i18n ══════════ */
+const STRINGS = {
+  ar: {
+    tagline:'مساعدك الصحي الذكي — اسأل بصوتك أو بالكتابة', placeholder:'اكتب سؤالك هنا...',
+    upload:'رفع ملف PDF', speaker:'قراءة الإجابة',
+    welcome:'مرحباً! أنا طمني، مساعدك الصحي.<br>يمكنك سؤالي بالكتابة أو بالضغط على زر المايكروفون والتحدث.<br>يمكنك أيضاً رفع ملف PDF طبي لأجيب عليك منه.',
+    listening:'🎤 جاري الاستماع...', uploaded:'✅ تم رفع الملف! يمكنك الآن السؤال عنه.',
+    uploadErr:'❌ فشل رفع الملف', errConn:'❌ حدث خطأ في الاتصال',
+    tabChat:'محادثة', tabVision:'تحليل الصور', tabSearch:'بحث طبي',
+    vGeneral:'تحليل صورة طبية', vXray:'تحليل الأشعة السينية',
+    drop:'اسحب صورة هنا أو اضغط للاختيار', dropHint:'JPG · PNG · حتى 10 MB',
+    analyze:'تحليل', analyzing:'جاري التحليل...', threshold:'دقة الكشف:', resultLabel:'نتيجة التحليل',
+    searchBtn:'بحث', searching:'جاري البحث...', searchEmpty:'ابحث عن أي موضوع طبي للحصول على معلومات محدّثة من الويب.',
+    searchPH:'ابحث عن موضوع طبي...', imgPH:'اكتب سؤالك عن الصورة...',
+    noResults:'لا توجد نتائج.', imgPlaceholder:'ارفع صورة واضغط تحليل لعرض النتائج هنا',
+    disclaimer:'طمني أداة مساعدة للمعلومات الصحية فقط. لا تُستخدم للتشخيص أو العلاج. استشر طبيبك دائماً.\nTammeny is a health information assistant only — not a substitute for professional medical advice.',
+    dir:'rtl', lang:'ar-EG',
+  },
+  en: {
+    tagline:'Your AI health assistant — ask by voice or typing', placeholder:'Type your question here...',
+    upload:'Upload PDF', speaker:'Read answer aloud',
+    welcome:"Hello! I'm Tammeny, your health assistant.<br>Type your question or press the microphone button to speak.<br>You can also upload a medical PDF for me to answer from.",
+    listening:'🎤 Listening...', uploaded:'✅ File uploaded! You can now ask questions about it.',
+    uploadErr:'❌ Failed to upload file', errConn:'❌ Connection error',
+    tabChat:'Chat', tabVision:'Image Analysis', tabSearch:'Medical Search',
+    vGeneral:'Medical Image Analysis', vXray:'Chest X-Ray Analysis',
+    drop:'Drag an image here or click to choose', dropHint:'JPG · PNG · Max 10 MB',
+    analyze:'Analyze', analyzing:'Analyzing...', threshold:'Detection threshold:', resultLabel:'Analysis Result',
+    searchBtn:'Search', searching:'Searching...', searchEmpty:'Search any medical topic to get up-to-date information from the web.',
+    searchPH:'Search a medical topic...', imgPH:'Ask a question about the image...',
+    noResults:'No results found.', imgPlaceholder:'Upload an image and press Analyze to see results here.',
+    disclaimer:'Tammeny is a health information assistant only — not a substitute for professional medical advice. Always consult your doctor.',
+    dir:'ltr', lang:'en-US',
+  },
+};
+
+function t(key) { return STRINGS[currentLang][key] || key; }
+
+/* ══════════ LANGUAGE ══════════ */
+function setLang(lang) {
+  currentLang = lang;
+  const d = STRINGS[lang];
+  document.documentElement.lang = lang;
+  document.documentElement.dir  = d.dir;
+  const map = {
+    'tagline':d.tagline,'lbl-speaker':d.speaker,'btn-upload-lbl':d.upload,
+    'lbl-tab-chat':d.tabChat,'lbl-tab-vision':d.tabVision,'lbl-tab-search':d.tabSearch,
+    'lbl-v-general':d.vGeneral,'lbl-v-xray':d.vXray,
+    'lbl-drop':d.drop,'lbl-drop-hint':d.dropHint,
+    'lbl-analyze':d.analyze,'lbl-analyzing':d.analyzing,'lbl-threshold':d.threshold,
+    'result-label':d.resultLabel,'lbl-search-btn':d.searchBtn,'lbl-searching':d.searching,
+    'lbl-search-empty':d.searchEmpty,'lbl-ph':d.imgPlaceholder,
   };
+  Object.entries(map).forEach(([id,val]) => setText(id, val));
+  setText('welcome-text',   d.welcome, true);
+  setText('lbl-disclaimer', d.disclaimer.replace('\n','<br>'), true);
+  setAttr('userInput',   'placeholder', d.placeholder);
+  setAttr('searchInput', 'placeholder', d.searchPH);
+  setAttr('imgPrompt',   'placeholder', d.imgPH);
+  document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  if (recognition) recognition.lang = d.lang;
+}
 
-  function setLang(lang) {
-    currentLang = lang;
-    const t = i18n[lang];
-    document.documentElement.lang = lang;
-    document.documentElement.dir = t.dir;
-    document.getElementById('tagline').textContent = t.tagline;
-    document.getElementById('userInput').placeholder = t.placeholder;
-    document.getElementById('btn-upload-lbl').textContent = t.upload;
-    document.getElementById('lbl-speaker').textContent = t.speaker;
-    document.getElementById('welcome-text').innerHTML = t.welcome;
-    document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
-    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
-    if (recognition) recognition.lang = t.lang;
+function setText(id, val, isHtml = false) {
+  const el = document.getElementById(id);
+  if (el) isHtml ? (el.innerHTML = val) : (el.textContent = val);
+}
+function setAttr(id, attr, val) {
+  const el = document.getElementById(id);
+  if (el) el[attr] = val;
+}
+
+/* ══════════ TABS ══════════ */
+function switchTab(tab) {
+  ['chat','vision','search'].forEach(name => {
+    document.getElementById(`tab-${name}`).classList.toggle('active', name === tab);
+    document.getElementById(`panel-${name}`).classList.toggle('active', name === tab);
+  });
+}
+
+/* ══════════ CHAT ══════════ */
+function addMsg(text, type = 'bot') {
+  const w = document.getElementById('welcomeMsg');
+  if (w) w.remove();
+  const box = document.getElementById('chatbox');
+  const div = document.createElement('div');
+  div.className = `msg msg-${type}`;
+  div.innerHTML = text;
+  box.appendChild(div);
+  box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
+  return div;
+}
+
+function addThinking() {
+  const box = document.getElementById('chatbox');
+  const div = document.createElement('div');
+  div.className = 'msg msg-bot'; div.id = 'thinking-msg';
+  div.innerHTML = '<div class="thinking"><span></span><span></span><span></span></div>';
+  box.appendChild(div);
+  box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
+  return div;
+}
+
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChat(); } }
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+async function handleChat() {
+  const input = document.getElementById('userInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  addMsg(msg, 'user');
+  input.value = ''; input.style.height = 'auto';
+  const thinking = addThinking();
+  try {
+    const res  = await fetch(`${CHAT_API}/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ prompt:msg, session_id:SESSION_ID }) });
+    const data = await res.json();
+    thinking.remove();
+    const reply = data.answer || data.response || t('errConn');
+    addMsg(reply, 'bot');
+    if (document.getElementById('speakerToggle').checked) speak(reply);
+  } catch { thinking.remove(); addMsg(t('errConn'), 'error'); }
+}
+
+async function uploadPDF() {
+  const file = document.getElementById('pdfInput').files[0];
+  if (!file || file.type !== 'application/pdf') return;
+  const form = new FormData();
+  form.append('file', file); form.append('session_id', SESSION_ID);
+  const thinking = addThinking();
+  try {
+    const res = await fetch(`${CHAT_API}/load_pdf/`, { method:'POST', body:form });
+    thinking.remove();
+    if (!res.ok) throw new Error();
+    addMsg(t('uploaded'), 'system');
+    document.getElementById('uploadBar').style.display = 'none';
+  } catch { thinking.remove(); addMsg(t('uploadErr'), 'error'); }
+}
+
+/* ══════════ VOICE ══════════ */
+function initRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  const r = new SR();
+  r.continuous = false; r.interimResults = false; r.lang = STRINGS[currentLang].lang;
+  r.onresult = (e) => { document.getElementById('userInput').value = e.results[0][0].transcript; autoResize(document.getElementById('userInput')); stopRecording(); handleChat(); };
+  r.onerror = () => stopRecording();
+  r.onend   = () => stopRecording();
+  return r;
+}
+
+function toggleMic() { isRecording ? stopRecording() : startRecording(); }
+
+function startRecording() {
+  if (!recognition) recognition = initRecognition();
+  if (!recognition) { addMsg('⚠️ المتصفح لا يدعم التعرف على الصوت. استخدم Chrome.', 'error'); return; }
+  recognition.lang = STRINGS[currentLang].lang;
+  recognition.start(); isRecording = true;
+  document.getElementById('mic-btn').classList.add('recording');
+  document.getElementById('voice-status').textContent = t('listening');
+}
+
+function stopRecording() {
+  isRecording = false;
+  if (recognition) try { recognition.stop(); } catch {}
+  document.getElementById('mic-btn').classList.remove('recording');
+  document.getElementById('voice-status').textContent = '';
+}
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g, ''));
+  utt.lang = STRINGS[currentLang].lang; utt.rate = 0.88; utt.pitch = 1;
+  const match = window.speechSynthesis.getVoices().find(v => v.lang.startsWith(currentLang));
+  if (match) utt.voice = match;
+  window.speechSynthesis.speak(utt);
+}
+window.speechSynthesis.onvoiceschanged = () => {};
+
+/* ══════════ IMAGE ANALYSIS ══════════ */
+function setVisionMode(mode) {
+  visionMode = mode;
+  document.getElementById('vbtn-general').classList.toggle('active', mode === 'general');
+  document.getElementById('vbtn-xray').classList.toggle('active',   mode === 'xray');
+  document.getElementById('threshold-row').style.display = mode === 'xray'    ? 'flex' : 'none';
+  document.getElementById('promptRow').style.display     = mode === 'general' ? 'flex' : 'none';
+  clearResult();
+}
+
+function updateThreshold(val) {
+  document.getElementById('threshold-val').textContent = (parseFloat(val) / 100).toFixed(2);
+  document.getElementById('threshold-slider').style.background = `linear-gradient(90deg, var(--teal) ${val}%, var(--border) ${val}%)`;
+}
+
+function onDragOver(e)  { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
+function onDragLeave()  { document.getElementById('dropZone').classList.remove('drag-over'); }
+function onDrop(e)      { e.preventDefault(); onDragLeave(); if (e.dataTransfer.files[0]) loadImageFile(e.dataTransfer.files[0]); }
+function onImageSelected(e) { if (e.target.files[0]) loadImageFile(e.target.files[0]); }
+
+function loadImageFile(file) {
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById('imgPreview').src = e.target.result;
+    document.getElementById('previewWrap').classList.add('has-image');
+    document.getElementById('dropZone').style.display = 'none';
+    document.getElementById('btn-analyze').disabled = false;
+    clearResult();
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage() {
+  selectedFile = null;
+  document.getElementById('imgPreview').src = '';
+  document.getElementById('previewWrap').classList.remove('has-image');
+  document.getElementById('dropZone').style.display = '';
+  document.getElementById('btn-analyze').disabled = true;
+  document.getElementById('imgInput').value = '';
+  clearResult();
+}
+
+function clearResult() {
+  document.getElementById('imgResult').classList.remove('visible');
+  document.getElementById('imgResultBody').innerHTML = '';
+  document.getElementById('imgSpinner').classList.remove('visible');
+  document.getElementById('imgPlaceholder').style.display = '';
+}
+
+async function analyzeImage() {
+  if (!selectedFile) return;
+  clearResult();
+  document.getElementById('imgSpinner').classList.add('visible');
+  document.getElementById('imgPlaceholder').style.display = 'none';
+  document.getElementById('btn-analyze').disabled = true;
+  try { visionMode === 'general' ? await analyzeGeneral() : await analyzeXray(); }
+  finally { document.getElementById('imgSpinner').classList.remove('visible'); document.getElementById('btn-analyze').disabled = false; }
+}
+
+async function analyzeGeneral() {
+  const promptText = document.getElementById('imgPrompt').value.trim() ||
+    (currentLang === 'ar' ? 'من فضلك اشرح ما تراه في هذه الصورة الطبية بلغة بسيطة يفهمها المريض.' : 'Please describe what you see in this medical image in simple language that a patient can understand.');
+  const form = new FormData();
+  form.append('image', selectedFile); form.append('human_prompt', promptText);
+  const res  = await fetch(`${VISION_API}/analyze_image/`, { method:'POST', body:form });
+  const data = await res.json();
+  const body = document.getElementById('imgResultBody');
+  body.innerHTML = data.error ? `<p>❌ ${data.error}</p>` : `<p>${(data.response||'').replace(/\n/g,'<br>')}</p>`;
+  document.getElementById('result-badge').className   = 'result-badge badge-ai';
+  document.getElementById('result-badge').textContent = '🤖 AI Vision';
+  document.getElementById('imgResult').classList.add('visible');
+}
+
+async function analyzeXray() {
+  const threshold = parseFloat(document.getElementById('threshold-slider').value) / 100;
+  const form = new FormData(); form.append('file', selectedFile);
+  const res  = await fetch(`${XRAY_API}/analyze/xray?confidence_threshold=${threshold}&include_visualization=false`, { method:'POST', body:form });
+  const data = await res.json();
+  const body = document.getElementById('imgResultBody');
+  body.innerHTML = '';
+
+  if (data.error || data.detail) {
+    body.textContent = '❌ ' + (data.error || data.detail);
+    document.getElementById('imgResult').classList.add('visible');
+    return;
   }
 
-  /* ═══════════════════════════════════════════
-     MESSAGES
-  ═══════════════════════════════════════════ */
-  function addMsg(text, type = 'bot') {
-    const welcomeMsg = document.getElementById('welcomeMsg');
-    if (welcomeMsg) welcomeMsg.remove();
+  const riskMap   = { low:'badge-low', medium:'badge-med', high:'badge-hi' };
+  const riskEmoji = { low:'✅', medium:'⚠️', high:'🚨' };
+  const risk = data.overall_risk_level || 'low';
+  const badge = document.getElementById('result-badge');
+  badge.className = `result-badge ${riskMap[risk]}`;
+  badge.textContent = `${riskEmoji[risk]} ${risk.toUpperCase()}`;
 
-    const chatbox = document.getElementById('chatbox');
-    const div = document.createElement('div');
-    div.className = `msg msg-${type}`;
-    div.innerHTML = text;
-    chatbox.appendChild(div);
-    chatbox.scrollTo({ top: chatbox.scrollHeight, behavior: 'smooth' });
-    return div;
+  const summary = document.createElement('div');
+  summary.className = `summary-card summary-${risk}`;
+  summary.textContent = data.patient_summary || '';
+  body.appendChild(summary);
+
+  const findings = [
+    ...(data.detailed_findings?.high_severity   || []),
+    ...(data.detailed_findings?.medium_severity || []),
+    ...(data.detailed_findings?.low_severity    || []),
+  ];
+  if (findings.length > 0) {
+    const grid = document.createElement('div');
+    grid.className = 'findings-grid';
+    findings.forEach(f => {
+      const pct  = Math.round((f.confidence || 0) * 100);
+      const card = document.createElement('div');
+      card.className = 'finding-card';
+      card.innerHTML = `<div class="finding-name">${f.condition}</div><div class="finding-conf">${pct}%</div><div class="conf-bar"><div class="conf-fill" style="width:${pct}%"></div></div>${f.plain_language ? `<div class="finding-advice">${f.plain_language}</div>` : ''}`;
+      grid.appendChild(card);
+    });
+    body.appendChild(grid);
   }
 
-  function addThinking() {
-    const chatbox = document.getElementById('chatbox');
-    const div = document.createElement('div');
-    div.className = 'msg msg-bot';
-    div.id = 'thinking-msg';
-    div.innerHTML = '<div class="thinking"><span></span><span></span><span></span></div>';
-    chatbox.appendChild(div);
-    chatbox.scrollTo({ top: chatbox.scrollHeight, behavior: 'smooth' });
-    return div;
+  if (data.disclaimer) {
+    const disc = document.createElement('p');
+    disc.style.cssText = 'margin-top:14px;font-size:0.73rem;color:var(--muted);opacity:.7;line-height:1.6;';
+    disc.textContent = data.disclaimer;
+    body.appendChild(disc);
   }
+  document.getElementById('imgResult').classList.add('visible');
+}
 
-  /* ═══════════════════════════════════════════
-     CHAT
-  ═══════════════════════════════════════════ */
-  function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleChat();
+/* ══════════ SEARCH ══════════ */
+function cleanSearchText(raw) {
+  let s = raw || '';
+  const cutAt = ['You May Also Like','Related Articles','Trending Topics','Quick Links',
+    'Health Categories','Other Popular Categories','Better health starts here',
+    'Related Tags','SEE ALSO','Legal Subscribe','## Companies','Join the','Sign up for our','Example email'];
+  cutAt.forEach(m => { const i = s.indexOf(m); if (i > 200) s = s.slice(0, i); });
+  [
+    /^Published:.*$/gim, /^Author:.*$/gim, /^Type:.*$/gim,
+    /^Advertisement\s*$/gim, /^Subscribe\s*$/gim, /^.*newsletter.*$/gim,
+    /^.*reCAPTCHA.*$/gim, /^.*non-profit academic.*$/gim, /^.*Advertising on our site.*$/gim,
+    /^.*See our privacy policy.*$/gim, /^.*editorial process.*$/gim, /^Rendered:.*$/gim,
+    /^Source:.*Getty.*$/gim, /^Image content:.*$/gim, /^View image online.*$/gim,
+    /^Search\s*$/gim, /^[A-Z][a-z]+ \d+,? \d{4}\s*\/.*\/.*$/gim, /^https?:\/\/\S+\s*$/gim,
+    /^#{1,3}\s*(Entities|Companies)\s*$/gim,
+  ].forEach(rx => { s = s.replace(rx, ''); });
+  return s.replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function renderMarkdown(md) {
+  const lines = md.split('\n');
+  let html = '', inList = false;
+  lines.forEach(raw => {
+    const line = raw.trim();
+    if (!line) { if (inList) { html += '</ul>'; inList = false; } return; }
+    if (/^###\s/.test(line)) { if (inList) { html += '</ul>'; inList = false; } html += `<div class="md-h3">${esc(line.replace(/^###\s+/,''))}</div>`; return; }
+    if (/^##\s/.test(line))  { if (inList) { html += '</ul>'; inList = false; } html += `<div class="md-h2">${esc(line.replace(/^##\s+/,''))}</div>`; return; }
+    if (/^#\s/.test(line))   { if (inList) { html += '</ul>'; inList = false; } html += `<div class="md-h1">${esc(line.replace(/^#\s+/,''))}</div>`; return; }
+    if (/^[-*•]\s/.test(line) || /^\d+\.\s/.test(line)) {
+      if (!inList) { html += '<ul class="md-ul">'; inList = true; }
+      html += `<li>${inlineMd(line.replace(/^[-*•]\s+/,'').replace(/^\d+\.\s+/,''))}</li>`; return;
     }
-  }
+    if (/^---+$/.test(line)) { if (inList) { html += '</ul>'; inList = false; } html += '<hr class="md-hr">'; return; }
+    if (inList) { html += '</ul>'; inList = false; }
+    html += `<p class="md-p">${inlineMd(line)}</p>`;
+  });
+  if (inList) html += '</ul>';
+  return html;
+}
 
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-  }
+function inlineMd(s) {
+  return esc(s).replace(/\*\*(.+?)\*\*/g,'<span class="md-bold">$1</span>').replace(/\*(.+?)\*/g,'<em>$1</em>');
+}
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function domainOf(url) { try { return new URL(url).hostname.replace(/^www\./,''); } catch { return url; } }
 
-  async function handleChat() {
-    const input = document.getElementById('userInput');
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    addMsg(msg, 'user');
-    input.value = '';
-    input.style.height = 'auto';
-
-    const thinking = addThinking();
-
-    try {
-      const res = await fetch(`${API_BASE}/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: msg, session_id: SESSION_ID })
-      });
-
-      const data = await res.json();
-      thinking.remove();
-      const reply = data.answer || data.response || i18n[currentLang].errResponse;
-      addMsg(reply, 'bot');
-
-      if (document.getElementById('speakerToggle').checked) {
-        speak(reply);
-      }
-
-    } catch (err) {
-      thinking.remove();
-      addMsg(i18n[currentLang].errResponse, 'error');
-    }
-  }
-
-  /* ═══════════════════════════════════════════
-     PDF UPLOAD
-  ═══════════════════════════════════════════ */
-  async function uploadPDF() {
-    const fileInput = document.getElementById('pdfInput');
-    const file = fileInput.files[0];
-    if (!file || file.type !== 'application/pdf') return;
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('session_id', SESSION_ID);
-
-    const thinking = addThinking();
-
-    try {
-      const res = await fetch(`${API_BASE}/load_pdf/`, { method: 'POST', body: formData });
-      thinking.remove();
-      if (!res.ok) throw new Error();
-      addMsg(i18n[currentLang].uploaded, 'system');
-      document.getElementById('uploadBar').style.display = 'none';
-    } catch {
-      thinking.remove();
-      addMsg(i18n[currentLang].uploadErr, 'error');
-    }
-  }
-
-  /* ═══════════════════════════════════════════
-     VOICE INPUT (Speech Recognition)
-  ═══════════════════════════════════════════ */
-  function initRecognition() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return null;
-
-    const r = new SR();
-    r.continuous = false;
-    r.interimResults = false;
-    r.lang = i18n[currentLang].lang;
-
-    r.onresult = (e) => {
-      const transcript = e.results[0][0].transcript;
-      document.getElementById('userInput').value = transcript;
-      autoResize(document.getElementById('userInput'));
-      stopRecording();
-      handleChat();
-    };
-
-    r.onerror = () => stopRecording();
-    r.onend   = () => stopRecording();
-
-    return r;
-  }
-
-  function toggleMic() {
-    if (isRecording) {
-      stopRecording();
-    } else {
-      startRecording();
-    }
-  }
-
-  function startRecording() {
-    if (!recognition) recognition = initRecognition();
-    if (!recognition) {
-      addMsg('⚠️ المتصفح لا يدعم التعرف على الصوت. استخدم Chrome.', 'error');
+async function doSearch() {
+  const query = document.getElementById('searchInput').value.trim();
+  if (!query) return;
+  const area = document.getElementById('searchScrollArea');
+  [...area.querySelectorAll('.search-result-card')].forEach(el => el.remove());
+  document.getElementById('searchEmpty').style.display = 'none';
+  document.getElementById('searchSpinner').classList.add('visible');
+  document.getElementById('btn-search-go').disabled = true;
+  try {
+    const res = await fetch(`${SEARCH_API}/chat?prompt=${encodeURIComponent(query)}`, { method:'POST', headers:{'Content-Type':'application/json'} });
+    if (!res.ok) throw new Error('Server error ' + res.status);
+    const data = await res.json();
+    document.getElementById('searchSpinner').classList.remove('visible');
+    if (!data.results || data.results.length === 0) {
+      document.getElementById('searchEmpty').style.display = '';
+      document.getElementById('searchEmpty').querySelector('p').textContent = t('noResults');
       return;
     }
-    recognition.lang = i18n[currentLang].lang;
-    recognition.start();
-    isRecording = true;
-    document.getElementById('mic-btn').classList.add('recording');
-    document.getElementById('voice-status').textContent = i18n[currentLang].listening;
+    data.results.forEach((r, idx) => {
+      const cleaned = cleanSearchText(r.response || '');
+      if (!cleaned) return;
+      const hasRef = r.ref && r.ref !== 'No reference';
+      const card   = document.createElement('div');
+      card.className = 'search-result-card';
+      card.innerHTML = `<div class="src-header"><div class="src-num">${idx+1}</div><div class="src-domain">${esc(hasRef ? domainOf(r.ref) : 'Result '+(idx+1))}</div>${hasRef ? `<a class="src-open" href="${r.ref}" target="_blank" rel="noopener">↗ Open</a>` : ''}</div><div class="src-body">${renderMarkdown(cleaned)}</div>`;
+      area.appendChild(card);
+    });
+    area.scrollTop = 0;
+  } catch (err) {
+    console.error('Search error:', err);
+    document.getElementById('searchSpinner').classList.remove('visible');
+    document.getElementById('searchEmpty').style.display = '';
+    document.getElementById('searchEmpty').querySelector('p').textContent = t('errConn');
+  } finally {
+    document.getElementById('btn-search-go').disabled = false;
   }
+}
 
-  function stopRecording() {
-    isRecording = false;
-    if (recognition) try { recognition.stop(); } catch {}
-    document.getElementById('mic-btn').classList.remove('recording');
-    document.getElementById('voice-status').textContent = '';
-  }
-
-  /* ═══════════════════════════════════════════
-     VOICE OUTPUT (Speech Synthesis)
-  ═══════════════════════════════════════════ */
-  function speak(text) {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-
-    // Strip HTML tags for speaking
-    const clean = text.replace(/<[^>]+>/g, '');
-
-    const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.lang = i18n[currentLang].lang;
-    utterance.rate = 0.88;
-    utterance.pitch = 1;
-
-    // Try to pick a matching voice
-    const voices = window.speechSynthesis.getVoices();
-    const langCode = currentLang === 'ar' ? 'ar' : 'en';
-    const match = voices.find(v => v.lang.startsWith(langCode));
-    if (match) utterance.voice = match;
-
-    window.speechSynthesis.speak(utterance);
-  }
-
-  // Ensure voices load on some browsers
-  window.speechSynthesis.onvoiceschanged = () => {};
+/* ══════════ INIT ══════════ */
+updateThreshold(50);
 </script>
-
 </body>
 </html>

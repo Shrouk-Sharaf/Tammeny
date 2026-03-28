@@ -49,30 +49,24 @@ def get_analyzer():
 
 async def analyze_xray_image(
     file,
-    confidence_threshold: float = 0.5  # ✅ Make sure this matches
+    confidence_threshold: float = 0.5  
 ):
-    """Analyze X-Ray image and return results"""
     try:
         analyzer = get_analyzer()
         
-        # Handle both BytesIO and UploadFile objects
         if hasattr(file, 'read'):
-            # It's already a file-like object (BytesIO)
             image_file = file
-            # Reset to beginning in case it was already read
             image_file.seek(0)
         else:
-            # It's an UploadFile, read its content
             contents = await file.read()
             image_file = io.BytesIO(contents)
         
         print(f"🔍 Processing image - Type: {type(image_file)}")
-        print(f"🎯 Confidence threshold: {confidence_threshold}")  # ✅ Debug print
+        print(f"🎯 Confidence threshold: {confidence_threshold}")  
         
-        # Perform analysis - pass the confidence threshold
         results = analyzer.analyze_xray(
             image_file, 
-            confidence_threshold=confidence_threshold  # ✅ Pass it through
+            confidence_threshold=confidence_threshold  
         )
         
         return results

@@ -1,9 +1,3 @@
-"""
-Tammeny — Live Medical Image Analyzer (Vision AI)
-Accepts an image + optional question, returns plain-language AI analysis.
-Run with: uvicorn Live_MedProc:app --reload --host 127.0.0.1 --port 8001
-"""
-
 import os
 import base64
 import requests
@@ -15,24 +9,24 @@ from dotenv import load_dotenv
 load_dotenv()
 
 HF_ROUTER_TOKEN = os.getenv("HF_ROUTER_TOKEN")
-if not HF_ROUTER_TOKEN:
-    raise ValueError("HF_ROUTER_TOKEN missing — check your .env file.")
 
 API_URL    = "https://router.huggingface.co/v1/chat/completions"
-HEADERS    = {"Authorization": f"Bearer {HF_ROUTER_TOKEN}"}
 MODEL_NAME = "Qwen/Qwen2.5-VL-7B-Instruct:hyperbolic"
+HEADERS    = {"Authorization": f"Bearer {HF_ROUTER_TOKEN}"} if HF_ROUTER_TOKEN else {}
 
-SYSTEM_PROMPT = """You are Tammeny (طمّني), a compassionate medical AI assistant.
+SYSTEM_PROMPT = """You are Tammeny (طمّني), a warm, caring, and knowledgeable health assistant.
 
-Your job is to help patients understand their medical images in simple, clear language.
-
-RULES:
-- Detect the language of the user's question and ALWAYS reply in the SAME language (Arabic or English).
-- Use plain, easy-to-understand language. Avoid complex medical jargon; if you must use a term, explain it.
-- Be warm, clear, and reassuring — never alarming or dismissive.
-- Describe what you observe in the image in simple terms.
-- NEVER provide a clinical diagnosis. Always end with a recommendation to consult a doctor.
-- Keep your response concise: 3–5 short paragraphs maximum."""
+STRICT RULES:
+1. LANGUAGE DETECTION IS YOUR TOP PRIORITY.
+   - If the user writes in English → reply ENTIRELY in English. Not a single Arabic word.
+   - If the user writes in Arabic  → reply ENTIRELY in Arabic.  Not a single English word.
+   - Detect language from the CURRENT message, not previous ones.
+   - When in doubt, use English.
+2. Use simple, plain language. If you use a medical term, explain it in parentheses.
+3. Be warm, clear, and reassuring — never alarming or dismissive.
+4. Describe what you observe in the image in plain terms.
+5. NEVER provide a clinical diagnosis. Always end with a recommendation to consult a doctor.
+6. Keep your response concise"""
 
 app = FastAPI(title="Tammeny Vision API", version="1.0.0")
 
@@ -57,11 +51,12 @@ async def analyze_image(
         default="Please describe what you see in this medical image in simple language that a patient can understand."
     ),
 ):
-    try:
-        img_bytes = await image.read()
-        img_b64   = base64.b64encode(img_bytes).decode()
+    if not HF_ROUTER_TOKEN:
+        return JSONResponse(status_code=503, content={"error": "HF_ROUTER_TOKEN is not configured"})
 
-        # Detect image type
+    try:
+        img_bytes    = await image.read()
+        img_b64      = base64.b64encode(img_bytes).decode()
         content_type = image.content_type or "image/jpeg"
 
         payload = {
@@ -72,10 +67,7 @@ async def analyze_image(
                     "role": "user",
                     "content": [
                         {"type": "text", "text": human_prompt},
-                        {
-                            "type": "image_url",
-                            "image_url": {"url": f"data:{content_type};base64,{img_b64}"},
-                        },
+                        {"type": "image_url", "image_url": {"url": f"data:{content_type};base64,{img_b64}"}},
                     ],
                 },
             ],
@@ -90,8 +82,7 @@ async def analyze_image(
                 content={"error": f"Vision API error: {resp.text}"},
             )
 
-        result  = resp.json()
-        message = result["choices"][0]["message"]
+        message = resp.json()["choices"][0]["message"]
         return {"response": message.get("content", ""), "role": message.get("role", "assistant")}
 
     except Exception as e:

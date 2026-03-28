@@ -12,7 +12,7 @@ from postproc import format_imaging_results
 
 app = FastAPI(
     title="Tammeny Imaging Service",
-    description="AI-powered chest X-ray analysis (DenseNet-121 / NIH)",
+    description="AI-powered chest X-ray analysis (DenseNet-121 / NIH ChestX-ray14)",
     version="1.1.0",
 )
 
@@ -30,8 +30,7 @@ MAX_SIZE_MB   = 10
 
 @app.get("/")
 async def root():
-    return {"service": "Tammeny Imaging Service", "status": "healthy",
-            "timestamp": datetime.utcnow().isoformat()}
+    return {"service": "Tammeny Imaging Service", "status": "healthy", "timestamp": datetime.utcnow().isoformat()}
 
 
 @app.get("/health")
@@ -42,17 +41,15 @@ async def health():
 @app.get("/models")
 async def models():
     return {
-        "models": [
-            {
-                "id": "chest-xray-nih",
-                "name": "Chest X-Ray Analyzer",
-                "architecture": "DenseNet-121",
-                "training_data": "NIH ChestX-ray14",
-                "conditions": 14,
-                "input_formats": list(ALLOWED_TYPES),
-                "max_size_mb": MAX_SIZE_MB,
-            }
-        ]
+        "models": [{
+            "id":             "chest-xray-nih",
+            "name":           "Chest X-Ray Analyzer",
+            "architecture":   "DenseNet-121",
+            "training_data":  "NIH ChestX-ray14",
+            "conditions":     14,
+            "input_formats":  list(ALLOWED_TYPES),
+            "max_size_mb":    MAX_SIZE_MB,
+        }]
     }
 
 
@@ -62,27 +59,21 @@ async def analyze_xray(
     confidence_threshold: float = Query(default=0.5, ge=0.1, le=0.99),
     include_visualization: bool = Query(default=False),
 ):
-    # Validate type
     if file.content_type not in ALLOWED_TYPES:
-        raise HTTPException(
-            400,
-            f"Unsupported file type '{file.content_type}'. Allowed: {', '.join(ALLOWED_TYPES)}",
-        )
+        raise HTTPException(400, f"Unsupported file type '{file.content_type}'. Allowed: {', '.join(ALLOWED_TYPES)}")
 
     file_bytes = await file.read()
 
-    # Validate size
     if len(file_bytes) > MAX_SIZE_MB * 1024 * 1024:
         raise HTTPException(400, f"File too large. Maximum is {MAX_SIZE_MB} MB.")
 
     analysis_id = str(uuid.uuid4())[:8]
-    print(f"[{analysis_id}] Analysing '{file.filename}' | {len(file_bytes)/1024:.1f} KB | threshold={confidence_threshold}")
+    print(f"[{analysis_id}] '{file.filename}' | {len(file_bytes)/1024:.1f} KB | threshold={confidence_threshold}")
 
     try:
-        raw = await analyze_xray_image(BytesIO(file_bytes), confidence_threshold)
+        raw    = await analyze_xray_image(BytesIO(file_bytes), confidence_threshold)
         result = format_imaging_results(raw, analysis_id, include_visualization)
         return JSONResponse(content=result)
-
     except HTTPException:
         raise
     except Exception as e:

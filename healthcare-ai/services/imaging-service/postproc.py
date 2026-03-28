@@ -1,8 +1,3 @@
-"""
-Tammeny — Imaging Result Formatter
-Adds plain-language patient summaries on top of raw model output.
-"""
-
 from datetime import datetime
 
 
@@ -109,7 +104,6 @@ def format_imaging_results(raw_results: dict, analysis_id: str, include_visualiz
             out["plain_language"] = get_condition_plain(cond)
         return out
 
-    # Patient-friendly summary sentence
     if not findings:
         patient_summary = (
             "✅ No significant findings detected. Your X-ray looks normal based on this AI scan. "
