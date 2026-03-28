@@ -1,16 +1,33 @@
-# rag_chatbot.py
+"""
+Tammeny — RAG Chatbot with Memory & General Fallback
+Run with: python rag_chatbot.py
+Serves on http://localhost:8000
+"""
+
+import os
+import uvicorn
 from fastapi import FastAPI, Form, UploadFile, File
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Dict
-import os
-import uvicorn
+from dotenv import load_dotenv
 
-# LangChain imports
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains import create_history_aware_retriever, create_retrieval_chain
+load_dotenv()
+
+MISTRAL_API_KEY       = os.getenv("MISTRAL_API_KEY")
+HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+
+if not MISTRAL_API_KEY:
+    raise ValueError("MISTRAL_API_KEY missing — check your .env file.")
+if not HUGGINGFACE_API_TOKEN:
+    raise ValueError("HUGGINGFACEHUB_API_TOKEN missing — check your .env file.")
+
+os.environ["HUGGINGFACEHUB_API_TOKEN"] = HUGGINGFACE_API_TOKEN
+
+from langchain_classic.chains.combine_documents import create_stuff_documents_chain
+from langchain_classic.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -21,8 +38,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_mistralai import ChatMistralAI
 
-# -------------------- FastAPI App Setup --------------------
-app = FastAPI()
+# ── App ────────────────────────────────────────────────────────────────────────
+app = FastAPI(title="Tammeny Health Assistant API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -32,121 +49,155 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static files to serve HTML
-app.mount("/static", StaticFiles(directory="."), name="static")
-
-# -------------------- Global LLM & Embedding Setup --------------------
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = "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"
-
+# ── LLM & Embeddings ──────────────────────────────────────────────────────────
 embeddings = HuggingFaceEmbeddings(
     model_name="all-MiniLM-L6-v2",
-    model_kwargs={"device": "cpu"}
+    model_kwargs={"device": "cpu"},
 )
 
-llm = ChatMistralAI(
-    api_key="QFc8aszmuCqLKlegGbh6TfxV7k6BwoCc",
-    model="mistral-small-latest"
-)
+llm = ChatMistralAI(api_key=MISTRAL_API_KEY, model="mistral-small-latest")
 
-# -------------------- In-Memory Stores --------------------
+# ── In-memory stores ──────────────────────────────────────────────────────────
 session_store: Dict[str, BaseChatMessageHistory] = {}
 vectorstore_cache: Dict[str, FAISS] = {}
+
 
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
     if session_id not in session_store:
         session_store[session_id] = ChatMessageHistory()
     return session_store[session_id]
 
-# -------------------- Serve Frontend --------------------
+
+# ── System prompt (shared) ────────────────────────────────────────────────────
+SYSTEM_PROMPT = """You are Tammeny (طمّني), a warm, caring, and knowledgeable health assistant.
+
+STRICT RULES:
+1. Detect the language of the user's message and ALWAYS reply in the EXACT SAME language (Arabic or English). Never mix.
+2. Use simple, plain language anyone can understand. If you must use a medical term, explain it immediately in parentheses.
+3. Keep answers clear, concise, and reassuring — never cold or clinical.
+4. NEVER diagnose a patient or prescribe medication. Always recommend consulting a doctor for serious concerns.
+5. If the uploaded document contains relevant information, use it. Otherwise use general medical knowledge.
+6. End every response with a warm follow-up question such as: "هل تريد أن أشرح أكثر؟" (Arabic) or "Would you like me to explain more?" (English).
+
+{context}"""
+
+CONTEXTUALIZE_PROMPT = ChatPromptTemplate.from_messages([
+    ("system",
+     "Given the chat history and the latest user question, rewrite it as a clear standalone question. "
+     "Keep the same language as the user (Arabic or English). Do NOT answer — only rewrite."),
+    MessagesPlaceholder("chat_history"),
+    ("human", "{input}"),
+])
+
+
+# ── Routes ────────────────────────────────────────────────────────────────────
 @app.get("/")
 async def serve_html():
     return FileResponse("chatbot_ui.html")
 
-# -------------------- Upload & Process PDF --------------------
+
 @app.post("/load_pdf/")
-async def load_pdf_upload(file: UploadFile = File(...), session_id: str = Form(...)):
+async def load_pdf(file: UploadFile = File(...), session_id: str = Form(...)):
     os.makedirs("temp_uploads", exist_ok=True)
     os.makedirs("vectors", exist_ok=True)
 
     if not file.filename.lower().endswith(".pdf"):
-        return JSONResponse(status_code=400, content={"error": "Only PDF files are allowed."})
+        return JSONResponse(status_code=400, content={"error": "Only PDF files are supported."})
 
-    file_location = f"temp_uploads/{file.filename}"
-    with open(file_location, "wb") as f:
+    file_path = f"temp_uploads/{file.filename}"
+    with open(file_path, "wb") as f:
         f.write(await file.read())
 
     try:
-        loader = PyPDFLoader(file_location)
-        documents = loader.load()
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=5000, chunk_overlap=500)
-        splits = text_splitter.split_documents(documents)
+        loader = PyPDFLoader(file_path)
+        docs = loader.load()
+        splitter = RecursiveCharacterTextSplitter(chunk_size=5000, chunk_overlap=500)
+        splits = splitter.split_documents(docs)
 
-        vectorstore = FAISS.from_documents(splits, embeddings)
-        vectorstore_path = f"vectors/{session_id}"
-        os.makedirs(vectorstore_path, exist_ok=True)
-        vectorstore.save_local(vectorstore_path)
-        vectorstore_cache[session_id] = vectorstore
+        vs = FAISS.from_documents(splits, embeddings)
+        vs_path = f"vectors/{session_id}"
+        os.makedirs(vs_path, exist_ok=True)
+        vs.save_local(vs_path)
+        vectorstore_cache[session_id] = vs
 
-        return {"message": "Uploaded successfully"}
+        return {"message": "تم رفع الملف بنجاح! يمكنك الآن السؤال عنه. | File uploaded successfully! You can now ask questions about it."}
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 
-# -------------------- Chat Endpoint --------------------
+
 class ChatRequest(BaseModel):
     prompt: str
     session_id: str
 
+
 @app.post("/chat")
-async def chat_with_pdf(request: ChatRequest):
-    prompt = request.prompt
-    session_id = request.session_id
-    vectorstore_path = f"vectors/{session_id}"
+async def chat(request: ChatRequest):
+    prompt    = request.prompt
+    sid       = request.session_id
+    vs_path   = f"vectors/{sid}"
 
-    if session_id not in vectorstore_cache:
-        if os.path.exists(vectorstore_path):
-            try:
-                vectorstore = FAISS.load_local(
-                    vectorstore_path,
-                    embeddings,
-                    allow_dangerous_deserialization=True
-                )
-                vectorstore_cache[session_id] = vectorstore
-            except Exception as e:
-                return JSONResponse(status_code=500, content={"error": str(e)})
-        else:
-            return JSONResponse(status_code=400, content={"error": "Please load a PDF first for this session."})
+    # ── Try to load vectorstore ───────────────────────────────────────────────
+    if sid not in vectorstore_cache and os.path.exists(vs_path):
+        try:
+            vectorstore_cache[sid] = FAISS.load_local(
+                vs_path, embeddings, allow_dangerous_deserialization=True
+            )
+        except Exception as e:
+            return JSONResponse(status_code=500, content={"error": str(e)})
 
-    retriever = vectorstore_cache[session_id].as_retriever()
+    # ── RAG path (PDF loaded) ─────────────────────────────────────────────────
+    if sid in vectorstore_cache:
+        retriever = vectorstore_cache[sid].as_retriever(search_kwargs={"k": 4})
 
-    contextualize_q_prompt = ChatPromptTemplate.from_messages([
-        ("system", "Given a chat history and the latest user question which might reference context, formulate a standalone question."),
+        qa_prompt = ChatPromptTemplate.from_messages([
+            ("system", SYSTEM_PROMPT),
+            MessagesPlaceholder("chat_history"),
+            ("human", "{input}"),
+        ])
+
+        doc_chain  = create_stuff_documents_chain(llm, qa_prompt)
+        rag_chain  = create_retrieval_chain(
+            create_history_aware_retriever(llm, retriever, CONTEXTUALIZE_PROMPT),
+            doc_chain,
+        )
+
+        chain = RunnableWithMessageHistory(
+            rag_chain,
+            get_session_history,
+            input_messages_key="input",
+            history_messages_key="chat_history",
+            output_messages_key="answer",
+        )
+
+        response = chain.invoke(
+            {"input": prompt},
+            config={"configurable": {"session_id": sid}},
+        )
+        return {"answer": response["answer"]}
+
+    # ── General path (no PDF) ────────────────────────────────────────────────
+    general_prompt = ChatPromptTemplate.from_messages([
+        ("system", SYSTEM_PROMPT.replace("{context}", "")),
         MessagesPlaceholder("chat_history"),
         ("human", "{input}"),
     ])
-    history_aware_retriever = create_history_aware_retriever(llm, retriever, contextualize_q_prompt)
 
-    qa_prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a medical assistant. Use the context below to answer the patient's questions accurately and concisely. Provide evidence-based information only. If unsure, respond: 'I do not have enough information to answer this.'\n\n{context}"),
-        MessagesPlaceholder("chat_history"),
-        ("human", "{input}"),
-    ])
-    document_chain = create_stuff_documents_chain(llm, qa_prompt)
-    rag_chain = create_retrieval_chain(history_aware_retriever, document_chain)
-
-    conversational_rag_chain = RunnableWithMessageHistory(
-        rag_chain,
-        lambda sid: get_session_history(sid),
+    chain = RunnableWithMessageHistory(
+        general_prompt | llm,
+        get_session_history,
         input_messages_key="input",
         history_messages_key="chat_history",
-        output_messages_key="answer"
     )
 
-    response = conversational_rag_chain.invoke(
+    response = chain.invoke(
         {"input": prompt},
-        config={"configurable": {"session_id": session_id}},
+        config={"configurable": {"session_id": sid}},
     )
+    return {"answer": response.content}
 
-    return {"answer": response["answer"]}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    host = os.getenv("HOST", "127.0.0.1")
+    port = int(os.getenv("PORT", 8000))
+    print(f"\n🩺 Tammeny chatbot running → http://{host}:{port}\n")
+    uvicorn.run(app, host=host, port=port)
