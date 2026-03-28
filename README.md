@@ -152,37 +152,12 @@ docker run -p 8501:8501 tammeny-ui
 | GET | `/models` | Available models |
 | POST | `/analyze/xray` | Analyze X-ray (file + `confidence_threshold`) |
 
-<<<<<<< HEAD
----
 
-## Disclaimer
-
-Tammeny is for educational and demonstration purposes only. It is **not** a medical device and should **not** be used as a substitute for professional medical advice, diagnosis, or treatment.
-
----
 =======
 ### Live Medical Procedure API (Port 8001)
 - `POST /analyze_image/`: Analyze medical images using external AI
 
 ## Development
-
-### Project Structure
-```
-healthcare-ai/
-├── services/
-│   ├── api/                 # Main API service
-│   ├── imaging-service/     # Medical imaging analysis
-│   ├── llm-proxy/          # LLM proxy service
-│   ├── ocr-service/        # OCR processing
-│   └── streamlit-ui/       # Web interface
-├── Live_MedProc.py         # Image analysis API
-├── main.py                 # Basic chatbot
-├── rag_chatbot.py          # RAG chatbot
-├── rag+fastapi.py          # Colab version
-├── Rag+fastapi.ipynb       # Jupyter notebook
-├── chatbot_ui.html         # HTML interface
-└── README.md
-```
 
 ### Adding New Features
 
@@ -191,17 +166,6 @@ healthcare-ai/
 3. Update the main README with new endpoints
 4. Ensure proper CORS configuration for cross-service communication
 
-## Testing
-
-Run individual service tests:
-
-```bash
-# Imaging service health check
-curl http://localhost:8002/health
-
-# Chatbot API test
-curl -X POST "http://localhost:8502/chat" -H "Content-Type: application/json" -d '{"prompt": "What are symptoms of flu?", "session_id": "test"}'
-```
 
 ## Contributing
 
@@ -214,4 +178,3 @@ curl -X POST "http://localhost:8502/chat" -H "Content-Type: application/json" -d
 ## Disclaimer
 
 This is a demonstration project for educational purposes. It is not intended for clinical use or as a substitute for professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare professionals for medical decisions.
->>>>>>> af3b3deb2182e40a9c6ca7435e2ac92e629f37e9
