@@ -57,7 +57,7 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 
 ---
 
-## ✨ Features
+## Features
 
 | Feature | Model | Description |
 |---|---|---|
@@ -124,7 +124,7 @@ cd imaging-service && pip install -r requirements.txt && cd ..
 
 ---
 
-## ▶️ Running
+## Running
 
 Open **4 terminals**:
 
