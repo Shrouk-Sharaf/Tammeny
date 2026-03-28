@@ -5,16 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>طمني — Tammeny Health Assistant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     /* ══════════ TOKENS ══════════ */
     :root {
-      --bg:      #080e1a;
+      --bg:      #060b16;
+      --bg2:     #0a1220;
       --glass:   rgba(255,255,255,0.03);
       --glass2:  rgba(255,255,255,0.06);
+      --glass3:  rgba(255,255,255,0.09);
       --border:  rgba(96,165,250,0.12);
       --border2: rgba(96,165,250,0.22);
       --teal:    #2dd4bf;
+      --teal2:   #14b8a6;
       --blue:    #60a5fa;
       --violet:  #a78bfa;
       --text:    #e2e8f0;
@@ -25,7 +28,9 @@
       --r:       18px;
       --font-ar: 'Tajawal', sans-serif;
       --font-en: 'Syne', sans-serif;
+      --font-mono: 'Space Mono', monospace;
       --shadow:  0 20px 60px rgba(0,0,0,0.5);
+      --glow:    0 0 40px rgba(45,212,191,0.25);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -39,34 +44,134 @@
     body::before {
       content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
       background:
-        radial-gradient(ellipse 60% 50% at 15% 10%, rgba(45,212,191,0.08) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 60% at 85% 90%, rgba(96,165,250,0.07) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(167,139,250,0.04) 0%, transparent 70%);
+        radial-gradient(ellipse 70% 55% at 10% 5%,  rgba(45,212,191,0.10) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 65% at 90% 90%, rgba(96,165,250,0.09) 0%, transparent 65%),
+        radial-gradient(ellipse 45% 45% at 55% 45%, rgba(167,139,250,0.05) 0%, transparent 65%);
     }
     body::after {
       content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
       background-image:
-        linear-gradient(rgba(96,165,250,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(96,165,250,0.03) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+        linear-gradient(rgba(96,165,250,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,165,250,0.04) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 0%, transparent 100%);
+    }
+
+    /* ══════════ HERO ══════════ */
+    .hero {
+      position: relative; z-index: 2;
+      width: 100%; max-width: 860px;
+      padding: 64px 24px 0;
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(45,212,191,0.08); border: 1px solid rgba(45,212,191,0.25);
+      border-radius: 50px; padding: 6px 16px; margin-bottom: 28px;
+      font-size: 0.75rem; color: var(--teal); font-family: var(--font-mono);
+      letter-spacing: 0.04em; text-transform: uppercase;
+      animation: fadeSlideDown 0.7s ease both;
+    }
+    .hero-badge .badge-dot {
+      width: 6px; height: 6px; background: var(--teal); border-radius: 50%;
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+
+    .hero-wordmark {
+      font-family: var(--font-en); font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 800; line-height: 0.95; letter-spacing: -0.03em;
+      margin-bottom: 10px;
+      animation: fadeSlideDown 0.7s 0.1s ease both;
+    }
+    .hero-wordmark .grad {
+      background: linear-gradient(120deg, var(--teal) 0%, var(--blue) 50%, var(--violet) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-ar {
+      font-family: var(--font-ar); font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: 300; color: rgba(226,232,240,0.55); margin-bottom: 24px;
+      letter-spacing: 0.1em;
+      animation: fadeSlideDown 0.7s 0.2s ease both;
+    }
+
+    .hero-tagline {
+      font-size: 1.05rem; color: var(--muted); line-height: 1.7;
+      max-width: 520px; margin-bottom: 36px;
+      animation: fadeSlideDown 0.7s 0.3s ease both;
+    }
+
+    .hero-pills {
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 48px;
+      animation: fadeSlideDown 0.7s 0.4s ease both;
+    }
+    .hero-pill {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--glass2); border: 1px solid var(--border2);
+      border-radius: 50px; padding: 8px 18px; font-size: 0.82rem; color: var(--text);
+      transition: all 0.2s;
+    }
+    .hero-pill:hover { background: var(--glass3); border-color: var(--teal); color: var(--teal); }
+    .hero-pill .pill-icon { font-size: 1rem; }
+
+    .hero-divider {
+      width: 100%; max-width: 860px;
+      display: flex; align-items: center; gap: 16px; margin-bottom: 0;
+      animation: fadeSlideDown 0.7s 0.5s ease both;
+    }
+    .hero-divider::before, .hero-divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(96,165,250,0.2), transparent);
+    }
+    .hero-divider span {
+      font-size: 0.72rem; color: var(--muted); font-family: var(--font-mono);
+      text-transform: uppercase; letter-spacing: 0.12em; white-space: nowrap;
+    }
+
+    /* ══════════ STAT ROW ══════════ */
+    .stat-row {
+      display: flex; gap: 0; width: 100%; max-width: 860px;
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; margin-bottom: 24px;
+      animation: fadeSlideDown 0.7s 0.55s ease both;
+    }
+    .stat-item {
+      flex: 1; padding: 16px 12px; text-align: center;
+      border-right: 1px solid var(--border); transition: background 0.2s;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-item:hover { background: var(--glass2); }
+    .stat-num { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 700; color: var(--teal); }
+    .stat-lbl { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+
+    /* ══════════ ANIMATIONS ══════════ */
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
     }
 
     /* ══════════ LAYOUT ══════════ */
     .app {
       position: relative; z-index: 1; width: 100%; max-width: 860px;
       padding: 0 16px 60px; display: flex; flex-direction: column; align-items: center;
+      animation: fadeSlideDown 0.7s 0.6s ease both;
     }
 
-    /* ══════════ HEADER ══════════ */
-    header { width: 100%; padding: 40px 0 28px; text-align: center; }
+    /* ══════════ HEADER (legacy — hidden, replaced by hero) ══════════ */
+    header { width: 100%; padding: 20px 0 16px; text-align: center; }
 
     .logo-ring {
       display: inline-flex; align-items: center; justify-content: center;
-      width: 64px; height: 64px; border-radius: 20px;
+      width: 52px; height: 52px; border-radius: 16px;
       background: linear-gradient(135deg, var(--teal), var(--blue));
-      font-size: 30px; margin-bottom: 16px;
-      box-shadow: 0 0 40px rgba(45,212,191,0.35);
+      font-size: 24px; margin-bottom: 12px;
+      box-shadow: var(--glow);
       animation: floatRing 3s ease-in-out infinite;
     }
     @keyframes floatRing {
@@ -107,7 +212,7 @@
       font-family: var(--font-ar); display: flex; align-items: center; justify-content: center; gap: 6px;
     }
     .mode-tab:hover  { color: var(--text); background: var(--glass2); }
-    .mode-tab.active { background: var(--glass2); border-color: var(--border2); color: var(--teal); }
+    .mode-tab.active { background: var(--glass2); border-color: var(--border2); color: var(--teal); box-shadow: 0 -2px 12px rgba(45,212,191,0.08); }
     .tab-icon { font-size: 1rem; }
 
     /* ══════════ CARD / PANELS ══════════ */
@@ -340,12 +445,60 @@
   </style>
 </head>
 <body>
+
+<!-- ══════════ HERO SECTION ══════════ -->
+<div class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    AI Health Assistant · مساعد صحي ذكي
+  </div>
+  <div class="hero-wordmark">
+    <span class="grad">Tammeny</span>
+  </div>
+  <div class="hero-ar">طمّني</div>
+  <p class="hero-tagline" id="hero-tagline">
+    مساعدك الصحي الذكي — يفهم العربية والإنجليزية، يحلل الصور الطبية، ويبحث في أحدث المصادر الطبية.
+  </p>
+  <div class="hero-pills">
+    <div class="hero-pill"><span class="pill-icon">💬</span> <span id="hero-pill-chat">محادثة ذكية بالذكاء الاصطناعي</span></div>
+    <div class="hero-pill"><span class="pill-icon">🩻</span> <span id="hero-pill-xray">تحليل أشعة سينية</span></div>
+    <div class="hero-pill"><span class="pill-icon">🔬</span> <span id="hero-pill-img">تحليل صور طبية</span></div>
+    <div class="hero-pill"><span class="pill-icon">🔎</span> <span id="hero-pill-search">بحث طبي متقدم</span></div>
+    <div class="hero-pill"><span class="pill-icon">📄</span> <span id="hero-pill-pdf">رفع ملفات PDF</span></div>
+  </div>
+</div>
+
+<!-- ══════════ STAT ROW ══════════ -->
+<div class="stat-row">
+  <div class="stat-item">
+    <div class="stat-num">14</div>
+    <div class="stat-lbl" id="stat-lbl-conditions">حالة طبية مكتشفة</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">DenseNet</div>
+    <div class="stat-lbl" id="stat-lbl-xray">نموذج الأشعة</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">Qwen 2.5</div>
+    <div class="stat-lbl" id="stat-lbl-vision">نموذج الرؤية</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">Mistral</div>
+    <div class="stat-lbl" id="stat-lbl-chat">نموذج المحادثة</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">2</div>
+    <div class="stat-lbl" id="stat-lbl-langs">لغة مدعومة</div>
+  </div>
+</div>
+
+<div class="hero-divider" style="max-width:860px;width:100%;padding:0 16px;margin-bottom:16px;">
+  <span id="hero-divider-text">ابدأ الآن · Start Now</span>
+</div>
+
 <div class="app">
 
-  <header>
-    <div class="logo-ring">🩺</div>
-    <div class="logo-title">Tammeny · طمني</div>
-    <p class="logo-sub" id="tagline">مساعدك الصحي الذكي — اسأل بصوتك أو بالكتابة</p>
+  <header style="padding:12px 0 8px;">
     <div class="controls-row">
       <div class="pill-group">
         <button class="pill-btn active" id="btn-ar" onclick="setLang('ar')">🇪🇬 عربي</button>
@@ -523,6 +676,13 @@ const STRINGS = {
     noResults:'لا توجد نتائج.', imgPlaceholder:'ارفع صورة واضغط تحليل لعرض النتائج هنا',
     disclaimer:'طمني أداة مساعدة للمعلومات الصحية فقط. لا تُستخدم للتشخيص أو العلاج. استشر طبيبك دائماً.\nTammeny is a health information assistant only — not a substitute for professional medical advice.',
     dir:'rtl', lang:'ar-EG',
+    heroBadge:'مساعد صحي بالذكاء الاصطناعي',
+    heroTagline:'مساعدك الصحي الذكي — يفهم العربية والإنجليزية، يحلل الصور الطبية، ويبحث في أحدث المصادر الطبية.',
+    pillChat:'محادثة ذكية بالذكاء الاصطناعي', pillXray:'تحليل أشعة سينية',
+    pillImg:'تحليل صور طبية', pillSearch:'بحث طبي متقدم', pillPdf:'رفع ملفات PDF',
+    statConditions:'حالة طبية مكتشفة', statXray:'نموذج الأشعة',
+    statVision:'نموذج الرؤية', statChat:'نموذج المحادثة', statLangs:'لغة مدعومة',
+    heroDivider:'ابدأ الآن · Start Now',
   },
   en: {
     tagline:'Your AI health assistant — ask by voice or typing', placeholder:'Type your question here...',
@@ -539,6 +699,13 @@ const STRINGS = {
     noResults:'No results found.', imgPlaceholder:'Upload an image and press Analyze to see results here.',
     disclaimer:'Tammeny is a health information assistant only — not a substitute for professional medical advice. Always consult your doctor.',
     dir:'ltr', lang:'en-US',
+    heroBadge:'AI Health Assistant',
+    heroTagline:'Your bilingual AI health assistant — understands Arabic & English, analyzes medical images, and searches the latest medical sources.',
+    pillChat:'Smart AI Conversation', pillXray:'Chest X-Ray Analysis',
+    pillImg:'Medical Image Analysis', pillSearch:'Advanced Medical Search', pillPdf:'Upload PDF Files',
+    statConditions:'Detected Conditions', statXray:'X-Ray Model',
+    statVision:'Vision Model', statChat:'Chat Model', statLangs:'Languages Supported',
+    heroDivider:'Start Now · ابدأ الآن',
   },
 };
 
@@ -550,6 +717,8 @@ function setLang(lang) {
   const d = STRINGS[lang];
   document.documentElement.lang = lang;
   document.documentElement.dir  = d.dir;
+
+  // App UI strings
   const map = {
     'tagline':d.tagline,'lbl-speaker':d.speaker,'btn-upload-lbl':d.upload,
     'lbl-tab-chat':d.tabChat,'lbl-tab-vision':d.tabVision,'lbl-tab-search':d.tabSearch,
@@ -558,6 +727,13 @@ function setLang(lang) {
     'lbl-analyze':d.analyze,'lbl-analyzing':d.analyzing,'lbl-threshold':d.threshold,
     'result-label':d.resultLabel,'lbl-search-btn':d.searchBtn,'lbl-searching':d.searching,
     'lbl-search-empty':d.searchEmpty,'lbl-ph':d.imgPlaceholder,
+    // Hero section
+    'hero-tagline':d.heroTagline,
+    'hero-pill-chat':d.pillChat, 'hero-pill-xray':d.pillXray,
+    'hero-pill-img':d.pillImg,   'hero-pill-search':d.pillSearch, 'hero-pill-pdf':d.pillPdf,
+    'stat-lbl-conditions':d.statConditions, 'stat-lbl-xray':d.statXray,
+    'stat-lbl-vision':d.statVision, 'stat-lbl-chat':d.statChat, 'stat-lbl-langs':d.statLangs,
+    'hero-divider-text':d.heroDivider,
   };
   Object.entries(map).forEach(([id,val]) => setText(id, val));
   setText('welcome-text',   d.welcome, true);
