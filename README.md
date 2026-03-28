@@ -24,7 +24,7 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 
 > Ask any health question in English or Arabic. Tammeny responds in your language with warm, clear advice — and always reminds you to see a doctor.
 
-![Chat in English](docs/screenshots/chat_eng.png)
+![Chat in English](healthcare-ai/docs/screenshots/chat_eng.png)
 
 ---
 
@@ -32,7 +32,7 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 
 > Upload a chest X-ray and get instant AI screening for 14 thoracic conditions. Each finding includes a confidence score and a plain-language explanation of what it means.
 
-![X-Ray Analysis HIGH](D:\Tammeny\healthcare-ai\docs\screenshots\xray_high.png)
+![X-Ray Analysis HIGH](healthcare-ai/docs/screenshots/xray_high.png)
 
 ---
 
@@ -40,7 +40,7 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 
 > When findings are minor, Tammeny clearly reassures the patient — no panic, just the right next step.
 
-![X-Ray Analysis LOW](D:\Tammeny\healthcare-ai\docs\screenshots\xray_low.png)
+![X-Ray Analysis LOW](healthcare-ai/docs/screenshots/xray_low.png)
 
 ---
 
