@@ -48,12 +48,7 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 
 ## 🎬 Demo Video
 
-> Click the thumbnail below to watch the full demo.
-
-<!-- After recording with Notch, upload to YouTube and replace YOUR_VIDEO_ID -->
-[![Tammeny Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
-
-> 📌 **Can't see the video?** [Watch it here →](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+<video src="https://github.com/user-attachments/assets/df6201e8-c374-453a-805f-5826c8bd3b5c" controls width="100%"></video>
 
 ---
 
