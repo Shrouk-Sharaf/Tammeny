@@ -39,9 +39,6 @@ tammeny/
 │       ├── model_loader.py
 │       └── nih_processor.py
 │
-└── streamlit-ui/
-    ├── app.py              ← Main UI (port 8501)
-    └── Dockerfile
 ```
 
 ---
@@ -70,17 +67,13 @@ cd imaging-service
 pip install -r requirements.txt
 cd ..
 
-# Streamlit UI
-cd streamlit-ui
-pip install -r requirements.txt
-cd ..
 ```
 
 ---
 
 ## Running
 
-Open **4 terminals**:
+Open **3 terminals**:
 
 ```bash
 # Terminal 1 — Chatbot API
@@ -95,12 +88,19 @@ uvicorn Live_MedProc:app --reload --host 127.0.0.1 --port 8001
 cd imaging-service && python server.py
 # → http://0.0.0.0:8002
 
-# Terminal 4 — Streamlit UI
-cd streamlit-ui && streamlit run app.py
-# → http://localhost:8501
+# Terminal 4 (optional) — Web-search chatbot
+python main.py
+# → http://0.0.0.0:8003
 ```
 
-Then open **http://localhost:8501** in your browser.
+
+Then use the APIs:
+- `http://127.0.0.1:8000/` (chatbot)
+- `http://127.0.0.1:8001/` (vision)
+- `http://127.0.0.1:8002/health` (xray health)
+- `http://0.0.0.0:8003/` (web-search chatbot)
+
+Alternative (single command): `.\run_all.ps1` (PowerShell).
 
 ---
 
@@ -121,10 +121,7 @@ Then open **http://localhost:8501** in your browser.
 cd imaging-service
 docker build -t tammeny-imaging .
 docker run -p 8002:8002 tammeny-imaging
-
-# Streamlit UI
-cd streamlit-ui
-docker build -t tammeny-ui .
+```
 docker run -p 8501:8501 tammeny-ui
 ```
 
@@ -151,6 +148,12 @@ docker run -p 8501:8501 tammeny-ui
 | GET | `/health` | Health check |
 | GET | `/models` | Available models |
 | POST | `/analyze/xray` | Analyze X-ray (file + `confidence_threshold`) |
+
+### Web-search Chatbot (`:8003`)    
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Health check |
+| POST | `/chat` | Chat with web search (body: `{prompt, session_id}`) |
 
 
 =======
