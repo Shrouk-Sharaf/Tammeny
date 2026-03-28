@@ -24,7 +24,7 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 
 > Ask any health question in English or Arabic. Tammeny responds in your language with warm, clear advice — and always reminds you to see a doctor.
 
-![Chat in English](D:\Tammeny\healthcare-ai\docs\screenshots\chat_eng.png)
+![Chat in English](docs/screenshots/chat_eng.png)
 
 ---
 
