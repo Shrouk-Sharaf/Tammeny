@@ -14,6 +14,8 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 [![Mistral](https://img.shields.io/badge/Mistral_AI-Chat_Model-ff7000?style=flat-square)](https://mistral.ai)
 [![HuggingFace](https://img.shields.io/badge/HuggingFace-Qwen_2.5_VL-ffd21e?style=flat-square&logo=huggingface&logoColor=black)](https://huggingface.co)
 
+![Homepage Screenshot](healthcare-ai/docs/screenshots/home.png)
+
 </div>
 
 ---
