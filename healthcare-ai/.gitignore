@@ -13,3 +13,5 @@ Thumbs.db
 .idea/
 .ipynb_checkpoints/
 *.log
+.temp_uploads/
+.vectors/
