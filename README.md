@@ -18,7 +18,7 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 
 </div>
 
----
+----
 
 ## Screenshots
 
@@ -28,7 +28,7 @@ Ask questions, upload medical files, analyze X-rays, and search medical sources 
 
 ![Chat in English](healthcare-ai/docs/screenshots/chat_eng.png)
 
----
+----
 
 ### Chest X-Ray Analysis — HIGH Severity
 
